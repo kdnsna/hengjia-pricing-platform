@@ -39,3 +39,7 @@ build/
 # Test coverage
 coverage/
 .nyc_output/
+
+# Local verification runtime files
+*.pid
+verifier/runs/*-path.txt

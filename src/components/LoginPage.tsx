@@ -22,8 +22,8 @@ export function LoginPage({ onSuccess }: { onSuccess: (user: AccessUser) => void
   return (
     <main className="login-page">
       <header className="login-brand">
-        <div className="brand-mark" aria-hidden="true"><span>衡</span></div>
-        <div><strong>衡价</strong><span>全员全产品计价系统</span></div>
+        <div className="brand-mark" aria-hidden="true"><span>计</span></div>
+        <div><strong>全产品计价系统</strong><span>员工绩效计价工作台</span></div>
         <span className="login-environment">2026 计价年度 · 功能演示环境</span>
       </header>
 

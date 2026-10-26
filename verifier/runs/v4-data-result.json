@@ -1,17 +1,17 @@
 {
   "status": "pass",
-  "startedAt": "2026-10-26T01:26:18.672Z",
-  "finishedAt": "2026-10-26T01:26:19.325Z",
+  "startedAt": "2026-10-26T05:20:59.158Z",
+  "finishedAt": "2026-10-26T05:20:59.192Z",
   "originalRulesVerified": 51,
   "demoAccountsVerified": 6,
   "rowCounts": {
     "rules": 56,
-    "designs": 18,
-    "allocations": 9,
-    "batches": 13,
-    "users": 18,
-    "sessions": 20,
-    "logs": 238
+    "designs": 2,
+    "allocations": 12,
+    "batches": 14,
+    "users": 10,
+    "sessions": 8,
+    "logs": 173
   },
   "duplicateChecks": "pass",
   "testArtifactsRetained": true,

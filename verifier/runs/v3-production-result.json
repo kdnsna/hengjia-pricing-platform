@@ -3,10 +3,7 @@
   "rootStatus": 200,
   "viewportMeta": "pass",
   "coldStart": {
-    "status": "pass",
-    "pid": 10928,
-    "nodeModulesAbsent": true,
-    "entry": "dist/boot.js"
+    "status": "not_checked"
   },
   "productionEntries": [
     "dist/boot.js",
@@ -14,21 +11,21 @@
   ],
   "assets": [
     {
-      "path": "/assets/index-BJiDTD3w.js",
+      "path": "/assets/index-BSbiTEoF.js",
       "status": 200
     },
     {
-      "path": "/assets/index-DFIiWCzs.css",
+      "path": "/assets/index-DMyqL9aW.css",
       "status": 200
     }
   ],
   "requestCount": 4,
   "staticAssetCount": 2,
-  "transferBytes": 794503,
-  "encodedBodyBytes": 793303,
-  "decodedBodyBytes": 793303,
-  "domContentLoadedMs": 238,
-  "loadMs": 238,
+  "transferBytes": 832605,
+  "encodedBodyBytes": 831405,
+  "decodedBodyBytes": 831405,
+  "domContentLoadedMs": 28,
+  "loadMs": 28,
   "consoleErrors": [],
   "badResponses": [],
   "notFoundCount": 0

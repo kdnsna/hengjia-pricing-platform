@@ -1,7 +1,7 @@
 {
   "status": "pass",
-  "startedAt": "2026-10-26T01:25:01.891Z",
-  "finishedAt": "2026-10-26T01:25:32.157Z",
+  "startedAt": "2026-10-26T05:19:19.256Z",
+  "finishedAt": "2026-10-26T05:19:21.240Z",
   "checks": [
     "未登录及无效会话访问业务接口均被拒绝",
     "密码随机盐、校验和非本地 Cookie Secure 属性正确",
@@ -34,15 +34,15 @@
     "admin"
   ],
   "testArtifacts": {
-    "ruleId": "VMVOKQZB7",
-    "designId": 584671,
-    "branchBatchId": 120003,
-    "separationBatchId": 120004,
+    "ruleId": "VMVOT4A1L",
+    "designId": 1,
+    "branchBatchId": 13,
+    "separationBatchId": 14,
     "createdUserIds": [
-      982966,
-      982967,
-      982968,
-      982969
+      7,
+      8,
+      9,
+      10
     ],
     "retained": true
   },
@@ -54,5 +54,5 @@
   "rulePublished": true,
   "ruleDisabled": true,
   "designPublished": true,
-  "baseUrl": "http://localhost:3100/api/trpc"
+  "baseUrl": "http://localhost:3000/api/trpc"
 }

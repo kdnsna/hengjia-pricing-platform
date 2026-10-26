@@ -1,0 +1,104 @@
+{
+  "status": "pass",
+  "startedAt": "2026-10-26T05:26:32.103Z",
+  "finishedAt": "2026-10-26T05:26:46.531Z",
+  "command": "VERIFY_ORIGIN=http://localhost:3000 node_modules/.bin/tsx verifier/v5/verify-browser.mjs",
+  "baseUrl": "http://localhost:3000",
+  "checkCount": 9,
+  "checks": [
+    "独立页面数据已准备：复核、锁定、其他期间批次及两条待确认分润",
+    "登录页和浏览器标题使用新名称，无旧品牌，桌面与移动布局正常",
+    "管理员明细只读，期间过滤正确，工作台仅汇总已锁定批次积分",
+    "建设方案同步展示草稿编辑、本人确认及未交付的结果发布与申诉边界",
+    "复核人员查看完整明细并完成四种宽度检查，填写原因后实际退回",
+    "提交机构编辑退回草稿，服务端重算为6400积分后重新提交",
+    "修改后批次经独立审批锁定，完整明细 CSV 真实下载且内容一致",
+    "员工在真实弹窗核对比例并完成本人确认，状态和待办刷新且移动端可操作",
+    "V5全流程无未预期控制台错误、页面异常、资源404或失败响应"
+  ],
+  "responsive": [
+    {
+      "width": 375,
+      "view": "登录页",
+      "client": 375,
+      "scroll": 375,
+      "touch": "pass"
+    },
+    {
+      "width": 1440,
+      "view": "复核批次明细-1440",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1024,
+      "view": "复核批次明细-1024",
+      "client": 1024,
+      "scroll": 1024,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 768,
+      "view": "复核批次明细-768",
+      "client": 768,
+      "scroll": 768,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 375,
+      "view": "复核批次明细-375",
+      "client": 375,
+      "scroll": 375,
+      "touch": "pass"
+    },
+    {
+      "width": 375,
+      "view": "本人分润确认弹窗",
+      "client": 375,
+      "scroll": 375,
+      "touch": "pass"
+    },
+    {
+      "width": 375,
+      "view": "员工分润页",
+      "client": 375,
+      "scroll": 375,
+      "touch": "pass"
+    }
+  ],
+  "screenshots": [
+    "verifier/runs/v5-mvotdk14-login-375.png",
+    "verifier/runs/v5-mvotdk14-login-1440.png",
+    "verifier/runs/v5-mvotdk14-admin-dashboard-1440.png",
+    "verifier/runs/v5-mvotdk14-blueprint-v5-1440.png",
+    "verifier/runs/v5-mvotdk14-reviewer-detail-1440.png",
+    "verifier/runs/v5-mvotdk14-reviewer-detail-375.png",
+    "verifier/runs/v5-mvotdk14-reviewer-return-1440.png",
+    "verifier/runs/v5-mvotdk14-branch-edit-1440.png",
+    "verifier/runs/v5-mvotdk14-reviewer-locked-detail-1440.png",
+    "verifier/runs/v5-mvotdk14-employee-confirm-1440.png",
+    "verifier/runs/v5-mvotdk14-employee-confirm-375.png",
+    "verifier/runs/v5-mvotdk14-employee-confirmed-375.png"
+  ],
+  "consoleErrors": [],
+  "badResponses": [],
+  "readback": {
+    "fixture": {
+      "ruleId": "V5BMVOTDK14",
+      "reviewBatchId": 21,
+      "lockedBatchId": 22,
+      "otherPeriodBatchId": 23,
+      "lockedTotal": 65280,
+      "allTotal": 68480
+    },
+    "lockedScore": "65,280.00 积分",
+    "download": {
+      "file": "批次21-计价明细.csv",
+      "bytes": 385,
+      "ruleId": "V5BMVOTDK14"
+    }
+  },
+  "cleanupErrors": [],
+  "error": null
+}

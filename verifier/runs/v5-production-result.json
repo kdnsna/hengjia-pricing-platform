@@ -1,0 +1,36 @@
+{
+  "status": "pass",
+  "rootStatus": 200,
+  "viewportMeta": "pass",
+  "coldStart": {
+    "status": "pass",
+    "pid": 14533,
+    "directory": "/Users/kdnsna/Projects/hengjia-v5-cold.LZiY0m",
+    "nodeModulesAbsent": true,
+    "entry": "dist/boot.js"
+  },
+  "productionEntries": [
+    "dist/boot.js",
+    "dist/public/index.html"
+  ],
+  "assets": [
+    {
+      "path": "/assets/index-BSbiTEoF.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/index-DMyqL9aW.css",
+      "status": 200
+    }
+  ],
+  "requestCount": 4,
+  "staticAssetCount": 2,
+  "transferBytes": 832605,
+  "encodedBodyBytes": 831405,
+  "decodedBodyBytes": 831405,
+  "domContentLoadedMs": 31,
+  "loadMs": 31,
+  "consoleErrors": [],
+  "badResponses": [],
+  "notFoundCount": 0
+}

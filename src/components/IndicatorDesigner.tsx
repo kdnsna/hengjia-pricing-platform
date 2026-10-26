@@ -25,7 +25,7 @@ type CatalogEntry = {
   design?: IndicatorDesignRecord;
 };
 type EditorConfig = {
-  key: number;
+  key: string;
   definition: IndicatorDefinition;
   designId: number | null;
   baseVersion: number;
@@ -55,7 +55,7 @@ export function IndicatorDesigner({ rules, designs, initialRule, onInitialConsum
   const [reviewStatusFor, setReviewStatusFor] = useState<IndicatorDesignRecord | null>(null);
   const [ruleStatusConfirm, setRuleStatusConfirm] = useState<{ rule: PricingRule; status: "active" | "disabled" } | null>(null);
   const [config, setConfig] = useState<EditorConfig | null>(() => initialRule ? {
-    key: Date.now(), definition: definitionFromRule(initialRule), designId: null, baseVersion: initialRule.version ?? 1, status: "draft", initialStep: 0, testSnapshot: null,
+    key: `revision-${initialRule.id}-v${initialRule.version ?? 1}`, definition: definitionFromRule(initialRule), designId: null, baseVersion: initialRule.version ?? 1, status: "draft", initialStep: 0, testSnapshot: null,
   } : null);
   const statusMutation = trpc.pricing.setRuleStatus.useMutation();
 
@@ -95,14 +95,17 @@ export function IndicatorDesigner({ rules, designs, initialRule, onInitialConsum
     return matchesStatus && matchesCategory && haystack.includes(query.toLowerCase());
   });
 
-  const startNew = () => setConfig({ key: Date.now(), definition: emptyIndicator(nextIndicatorCode(rules, designs)), designId: null, baseVersion: 0, status: "draft", initialStep: 0, testSnapshot: null });
-  const startRevision = (rule: PricingRule) => setConfig({ key: Date.now(), definition: definitionFromRule(rule), designId: null, baseVersion: rule.version ?? 1, status: "draft", initialStep: 0, testSnapshot: null });
+  const startNew = () => {
+    const id = nextIndicatorCode(rules, designs);
+    setConfig({ key: `new-${id}`, definition: emptyIndicator(id), designId: null, baseVersion: 0, status: "draft", initialStep: 0, testSnapshot: null });
+  };
+  const startRevision = (rule: PricingRule) => setConfig({ key: `revision-${rule.id}-v${rule.version ?? 1}`, definition: definitionFromRule(rule), designId: null, baseVersion: rule.version ?? 1, status: "draft", initialStep: 0, testSnapshot: null });
   const startDesign = (design: IndicatorDesignRecord) => {
     if (design.status === "review") {
       setReviewStatusFor(design);
       return;
     }
-    setConfig({ key: Date.now(), definition: design.definition, designId: design.id, baseVersion: design.baseVersion, status: "draft", initialStep: 0, testSnapshot: design.testSnapshot });
+    setConfig({ key: `design-${design.id}`, definition: design.definition, designId: design.id, baseVersion: design.baseVersion, status: "draft", initialStep: 0, testSnapshot: design.testSnapshot });
   };
   const exitEditor = () => { setConfig(null); onInitialConsumed(); };
 

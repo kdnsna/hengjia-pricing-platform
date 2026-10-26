@@ -23,7 +23,7 @@ export function WorkDashboard({ user, rules, batches, shares, designs, period, g
   const self = user.scope === "self";
   const currentBatches = batches.filter((batch) => batch.period === period);
   const currentShares = shares.filter((share) => share.period === period);
-  const totalScore = currentBatches.reduce((sum, batch) => sum + batch.totalScore, 0);
+  const totalScore = currentBatches.filter((batch) => batch.status === "locked").reduce((sum, batch) => sum + batch.totalScore, 0);
   const reviewCount = currentBatches.filter((batch) => batch.status === "review").length;
   const lockedCount = currentBatches.filter((batch) => batch.status === "locked").length;
   const draftCount = currentBatches.filter((batch) => batch.status === "draft").length;
@@ -51,7 +51,7 @@ export function WorkDashboard({ user, rules, batches, shares, designs, period, g
       <div className="page-head"><div><span className="eyebrow">{period} · {user.branch} · {ROLE_DEFINITIONS[user.role].scopeLabel}</span><h1>{title}</h1><p>{description}</p></div><div className="page-actions"><button className="button secondary" onClick={exportRules}><Download size={17} />导出正式规则</button><button className="button primary" onClick={() => go("simulator")}><Calculator size={17} />{self ? "本人试算" : "发起试算"}</button></div></div>
 
       <section className="hero-ledger">
-        <div className="ledger-main"><span>{self ? "本期本人分润记录" : "本期批次计价积分"}</span><strong>{self ? currentShares.length : scoreText(totalScore)}<small>{self ? " 条" : " 积分"}</small></strong><div className="ledger-delta">{self ? <><GitBranch size={16} />涉及 {new Set(currentShares.map((share) => share.ruleId)).size} 项产品 <i /> {pendingShares} 条待确认</> : <><FileCheck2 size={16} />{currentBatches.length} 个批次 <i /> {currentBatches.reduce((sum, batch) => sum + batch.employeeCount, 0)} 计价人次</>}</div></div>
+        <div className="ledger-main"><span>{self ? "本期本人分润记录" : "本期已锁定积分"}</span><strong>{self ? currentShares.length : scoreText(totalScore)}<small>{self ? " 条" : " 积分"}</small></strong><div className="ledger-delta">{self ? <><GitBranch size={16} />涉及 {new Set(currentShares.map((share) => share.ruleId)).size} 项产品 <i /> {pendingShares} 条待确认</> : <><FileCheck2 size={16} />{currentBatches.length} 个批次 <i /> {currentBatches.reduce((sum, batch) => sum + batch.employeeCount, 0)} 计价人次</>}</div></div>
         <div className="ledger-side"><span>{self ? "当前可用正式规则" : "当前等待复核"}</span><strong>{self ? <BookOpen size={20} /> : <Clock3 size={20} />}{self ? `${rules.length} 项` : `${reviewCount} 个批次`}</strong><p>{self ? "仅显示已启用的2026年度规则" : `另有 ${draftCount} 个草稿、${lockedCount} 个已锁定批次`}</p><button onClick={() => go(self ? "rules" : hasPermission(user, "batch:view") ? "approval" : "rules")}>{self ? "查看规则" : hasPermission(user, "batch:view") ? "查看批次" : "查看规则"}<ChevronRight size={16} /></button></div>
         <div className="ledger-watermark" aria-hidden="true">2026<br />PRICING</div>
       </section>

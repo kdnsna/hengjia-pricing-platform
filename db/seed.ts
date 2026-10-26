@@ -1,17 +1,19 @@
+import { ensureAuthSeed } from "../api/access";
+import { ensureSeed } from "../api/pricingRouter";
 import { getDb } from "../api/queries/connection";
-// TODO: import tables from "./schema"
 
 async function seed() {
-  const db = getDb();
-  console.log("Seeding database...");
-
-  // TODO: insert seed data, e.g.
-  // await db.insert(schema.posts).values([
-  //   { title: "First post", content: "Hello world" },
-  // ]);
-
-  console.log("Done.");
-  process.exit(0); // close MySQL connection pool
+  try {
+    await ensureAuthSeed();
+    await ensureSeed();
+    console.log("Demo accounts and pricing data are ready.");
+  } finally {
+    const client = (getDb() as unknown as { $client?: { end?: () => Promise<void> } }).$client;
+    await client?.end?.();
+  }
 }
 
-seed();
+seed().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

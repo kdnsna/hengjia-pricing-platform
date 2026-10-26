@@ -1,7 +1,7 @@
 {
   "status": "pass",
-  "startedAt": "2026-10-26T01:26:20.389Z",
-  "finishedAt": "2026-10-26T01:26:25.242Z",
+  "startedAt": "2026-10-26T05:20:59.829Z",
+  "finishedAt": "2026-10-26T05:20:59.893Z",
   "checks": [
     "pricing_rules.id 主键拒绝重复",
     "app_users.id 主键拒绝重复",
@@ -16,22 +16,22 @@
   ],
   "checkCount": 10,
   "rowCountsBefore": {
-    "users": 18,
-    "sessions": 20,
+    "users": 10,
+    "sessions": 8,
     "rules": 56,
-    "designs": 18,
-    "allocations": 9,
-    "batches": 13,
-    "logs": 238
+    "designs": 2,
+    "allocations": 12,
+    "batches": 14,
+    "logs": 173
   },
   "rowCountsAfter": {
-    "users": 18,
-    "sessions": 20,
+    "users": 10,
+    "sessions": 8,
     "rules": 56,
-    "designs": 18,
-    "allocations": 9,
-    "batches": 13,
-    "logs": 238
+    "designs": 2,
+    "allocations": 12,
+    "batches": 14,
+    "logs": 173
   },
   "transactionsRolledBack": true
 }

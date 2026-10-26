@@ -52,6 +52,8 @@ export const allocations = mysqlTable("allocations", {
   status: varchar("status", { length: 20 }).notNull().default("pending"),
   createdBy: bigint("created_by", { mode: "number", unsigned: true }),
   createdByEmployeeId: varchar("created_by_employee_id", { length: 32 }).notNull().default(""),
+  confirmedBy: bigint("confirmed_by", { mode: "number", unsigned: true }),
+  confirmedAt: timestamp("confirmed_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
@@ -69,6 +71,10 @@ export const batches = mysqlTable("calculation_batches", {
   createdByName: varchar("created_by_name", { length: 64 }).notNull().default(""),
   submittedBy: bigint("submitted_by", { mode: "number", unsigned: true }),
   approvedBy: bigint("approved_by", { mode: "number", unsigned: true }),
+  returnReason: text("return_reason"),
+  returnedBy: bigint("returned_by", { mode: "number", unsigned: true }),
+  returnedByName: varchar("returned_by_name", { length: 64 }).notNull().default(""),
+  returnedAt: timestamp("returned_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   submittedAt: timestamp("submitted_at"),
   approvedAt: timestamp("approved_at"),

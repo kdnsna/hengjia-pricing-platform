@@ -318,7 +318,7 @@ try {
   pass("独立页面测试设计稿已创建并提交，四组提交测试快照由服务端保存");
 
   browser = await puppeteer.launch({
-    executablePath: "/usr/bin/chromium",
+    executablePath: process.env.CHROME_PATH ?? "/usr/bin/chromium",
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
     defaultViewport: { width: 1440, height: 1000, deviceScaleFactor: 1 },

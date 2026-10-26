@@ -44,7 +44,7 @@ try {
   }
 
   browser = await puppeteer.launch({
-    executablePath: "/usr/bin/chromium",
+    executablePath: process.env.CHROME_PATH ?? "/usr/bin/chromium",
     headless: true,
     args: ["--no-sandbox", "--disable-gpu"],
   });
@@ -69,8 +69,8 @@ try {
     timeout: 60000,
   });
   assert.equal(rootResponse?.status(), 200, "生产首页必须返回200");
-  await page.waitForFunction(() => document.body.innerText.includes("衡价"));
-  await page.waitForFunction(() => document.body.innerText.includes("全产品覆盖") && document.body.innerText.includes("51项已载入"));
+  await page.waitForFunction(() => document.body.innerText.includes("全产品计价系统"));
+  await page.waitForFunction(() => document.body.innerText.includes("按岗位进入计价工作台") && document.body.innerText.includes("六类岗位，六种工作范围"));
   for (const path of assetPaths) {
     const url = new URL(path, "http://localhost:3000").href;
     assert.equal(responses.get(url), 200, `生产资源未成功加载：${path}`);

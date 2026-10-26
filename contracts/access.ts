@@ -50,7 +50,7 @@ export const ROLE_DEFINITIONS: Record<RoleId, {
     shortLabel: "员工",
     scope: "self",
     scopeLabel: "本人数据",
-    description: "查看本人分润记录和正式规则，进行本人试算；不能保存正式批次或维护规则。",
+    description: "查看并确认本人分润记录，核对正式规则和进行本人试算；不能保存正式批次或维护规则。",
     permissions: [],
   },
   relationship_manager: {

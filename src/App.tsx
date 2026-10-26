@@ -17,6 +17,9 @@ import { LoginPage } from "@/components/LoginPage";
 import { AccountCenter } from "@/components/AccountCenter";
 import { DesignReviewCenter } from "@/components/DesignReviewCenter";
 import { WorkDashboard } from "@/components/WorkDashboard";
+import { BatchDetailModal, type BatchRecord } from "@/components/BatchDetailModal";
+import { Modal } from "@/components/Modal";
+import { exportCsv } from "@/lib/exportCsv";
 import "./index.css";
 import "./access.css";
 
@@ -72,6 +75,7 @@ function WorkspaceApp({ user, onLogout }: { user: AccessUser; onLogout: () => vo
     onError: (error) => notify(error.message, "error"),
   });
   const availableNav = useMemo(() => NAV.filter((item) => !item.permission || hasPermission(user, item.permission)), [user]);
+  const activeView = availableNav.some((item) => item.id === view) ? view : "dashboard";
   const notify = (message: string, tone: Toast["tone"] = "success") => setToast({ message, tone });
   const refresh = () => utils.pricing.workspace.invalidate();
 
@@ -80,10 +84,6 @@ function WorkspaceApp({ user, onLogout }: { user: AccessUser; onLogout: () => vo
     const t = window.setTimeout(() => setToast(null), 3200);
     return () => window.clearTimeout(t);
   }, [toast]);
-
-  useEffect(() => {
-    if (!availableNav.some((item) => item.id === view)) setView("dashboard");
-  }, [availableNav, view]);
 
   useEffect(() => {
     if (workspace.error?.data?.code === "UNAUTHORIZED") onLogout();
@@ -103,6 +103,12 @@ function WorkspaceApp({ user, onLogout }: { user: AccessUser; onLogout: () => vo
     definition: row.definition as IndicatorDefinition,
     testSnapshot: row.testSnapshot as IndicatorDesignRecord["testSnapshot"],
   })), [workspace.data]);
+  const periodOptions = useMemo(() => {
+    const values = new Set<string>(["2026-10", "2026-09", "2026-08", "2026-07", period]);
+    workspace.data?.batches.forEach((batch) => values.add(batch.period));
+    workspace.data?.shares.forEach((share) => values.add(share.period));
+    return [...values].sort((a, b) => b.localeCompare(a));
+  }, [workspace.data, period]);
 
   const go = (next: View) => {
     if (!availableNav.some((item) => item.id === next)) return;
@@ -111,13 +117,13 @@ function WorkspaceApp({ user, onLogout }: { user: AccessUser; onLogout: () => vo
     window.scrollTo({ top: 0, behavior: "auto" });
   };
   const openDesigner = (rule?: PricingRule) => { setDesignRule(rule ?? null); go("designer"); };
-  const activeLabel = navLabel(view, user);
+  const activeLabel = navLabel(activeView, user);
   const allowedTargets = availableNav.map((item) => item.id);
   const helpItems = [
     { view: "designer" as View, permission: "design:manage" as Permission, title: "维护指标", text: "配置定义、算法、单价、公式和考核细则，测试通过后提交复核。" },
     { view: "simulator" as View, title: "进行试算", text: hasPermission(user, "batch:save") ? "选择人员、期间和产品，录入业务数据；保存时由服务端重新计算。" : "选择本人、期间和产品，录入业务数据，核对计算过程。员工试算不生成正式批次。" },
-    { view: "allocation" as View, title: "核对归属", text: hasPermission(user, "allocation:manage") ? "按实际协作关系登记分润，同一期间、同一产品的比例合计不得超过100%。" : "查看本人参与的分润记录、比例和确认状态。" },
-    { view: "approval" as View, permission: "batch:view" as Permission, title: "办理批次", text: hasPermission(user, "batch:approve") ? "核对复核中批次并审批锁定；提交人不能审批本人提交的内容。" : hasPermission(user, "batch:submit") ? "草稿提交复核后由独立复核人员审批，锁定后不能直接用新规则覆盖。" : "查看权限范围内的批次状态和操作记录。" },
+    { view: "allocation" as View, title: "核对归属", text: hasPermission(user, "allocation:manage") ? "登记协同分润，并由各参与人确认本人记录；同一期间、同一产品的比例合计不得超过100%。" : "查看并确认本人分润记录、比例和依据，不能代替其他人员确认。" },
+    { view: "approval" as View, permission: "batch:view" as Permission, title: "办理批次", text: hasPermission(user, "batch:approve") ? "逐条核对批次明细，填写原因退回或审批锁定；提交人不能复核本人提交的内容。" : hasPermission(user, "batch:submit") ? "查看明细和退回原因，修改后重新提交，由独立复核人员审批锁定。" : "查看权限范围内的批次明细、状态和操作记录。" },
   ].filter((item) => !item.permission || hasPermission(user, item.permission));
   const reviewBatches = (workspace.data?.batches ?? []).filter((batch) => batch.status === "review");
   const reviewDesigns = designs.filter((design) => design.status === "review");
@@ -132,16 +138,16 @@ function WorkspaceApp({ user, onLogout }: { user: AccessUser; onLogout: () => vo
     <div className="app-shell">
       <aside className={`sidebar ${mobileOpen ? "is-open" : ""}`}>
         <div className="brand">
-          <div className="brand-mark" aria-hidden="true"><span>衡</span></div>
-          <div><strong>衡价</strong><small>全员全产品计价系统</small></div>
+          <div className="brand-mark" aria-hidden="true"><span>计</span></div>
+          <div><strong>全产品计价系统</strong><small>员工绩效计价工作台</small></div>
           <button className="icon-button mobile-close" onClick={() => setMobileOpen(false)} aria-label="关闭导航"><X size={20} /></button>
         </div>
         <div className="edition"><span>2026 计价年度</span><BadgeCheck size={15} /><b>V1.0</b></div>
         <nav className="main-nav" aria-label="主导航">
           <p className="nav-caption">计价工作台</p>
           {availableNav.map(({ id, icon: Icon }) => (
-            <button key={id} className={view === id ? "active" : ""} onClick={() => go(id)} aria-current={view === id ? "page" : undefined}>
-              <Icon size={19} strokeWidth={1.8} /><span>{navLabel(id, user)}</span>{view === id && <ChevronRight size={16} className="nav-arrow" />}
+            <button key={id} className={activeView === id ? "active" : ""} onClick={() => go(id)} aria-current={activeView === id ? "page" : undefined}>
+              <Icon size={19} strokeWidth={1.8} /><span>{navLabel(id, user)}</span>{activeView === id && <ChevronRight size={16} className="nav-arrow" />}
             </button>
           ))}
         </nav>
@@ -158,23 +164,23 @@ function WorkspaceApp({ user, onLogout }: { user: AccessUser; onLogout: () => vo
         <header className="topbar">
           <div className="topbar-title"><button className="icon-button menu-trigger" onClick={() => setMobileOpen(true)} aria-label="打开导航"><Menu size={21} /></button><span>计价工作台</span><ChevronRight size={14} /><strong>{activeLabel}</strong></div>
           <div className="topbar-actions">
-            <label className="period-select"><Clock3 size={16} /><span className="sr-only">计价期间</span><select value={period} onChange={(e) => setPeriod(e.target.value)}><option>2026-10</option><option>2026-09</option><option>2026-08</option><option>2026-07</option></select><ChevronDown size={14} /></label>
+            <label className="period-select"><Clock3 size={16} /><span className="sr-only">计价期间</span><select value={period} onChange={(e) => setPeriod(e.target.value)}>{periodOptions.map((option) => <option key={option} value={option}>{option}</option>)}</select><ChevronDown size={14} /></label>
             <button className="icon-button" onClick={() => setHelpOpen(true)} aria-label="使用帮助"><CircleHelp size={19} /></button>
             <button className="icon-button notification-button" onClick={() => setNoticeOpen(true)} aria-label={`查看通知，${noticeItems.length}项`}><Bell size={19} />{noticeItems.length > 0 && <i />}</button>
           </div>
         </header>
 
         <div className="content-area">
-          {view === "blueprint" ? <PlatformBlueprint onNavigate={go} allowedTargets={allowedTargets} /> : workspace.isLoading ? <LoadingState /> : workspace.error ? <ErrorState message={workspace.error.message} retry={() => workspace.refetch()} /> : (
+          {activeView === "blueprint" ? <PlatformBlueprint onNavigate={go} allowedTargets={allowedTargets} /> : workspace.isLoading ? <LoadingState /> : workspace.error ? <ErrorState message={workspace.error.message} retry={() => workspace.refetch()} /> : (
             <>
-              {view === "dashboard" && <WorkDashboard user={user} rules={activeRules} batches={workspace.data?.batches ?? []} shares={workspace.data?.shares ?? []} designs={designs} period={period} go={go} exportRules={() => exportRules(activeRules, notify)} />}
-              {view === "rules" && <RuleCenter rules={activeRules} notify={notify} onDesign={openDesigner} canDesign={hasPermission(user, "design:manage")} />}
-              {view === "designer" && (user.role === "reviewer" ? <DesignReviewCenter rules={rules} designs={designs} refresh={refresh} notify={notify} /> : <IndicatorDesigner key={designRule?.id ?? "designer"} rules={rules} designs={designs} initialRule={designRule} onInitialConsumed={() => setDesignRule(null)} refresh={refresh} notify={notify} />)}
-              {view === "simulator" && <Simulator user={user} people={workspace.data?.people ?? []} rules={activeRules} period={period} refresh={refresh} notify={notify} canSave={hasPermission(user, "batch:save")} />}
-              {view === "allocation" && <AllocationCenter user={user} people={workspace.data?.allocationPeople ?? []} rules={activeRules} shares={workspace.data?.shares ?? []} period={period} refresh={refresh} notify={notify} canManage={hasPermission(user, "allocation:manage")} />}
-              {view === "validation" && <ValidationCenter notify={notify} />}
-              {view === "approval" && <ApprovalCenter ruleCount={activeRules.length} batches={workspace.data?.batches ?? []} logs={workspace.data?.logs ?? []} refresh={refresh} notify={notify} canSubmit={hasPermission(user, "batch:submit")} canApprove={hasPermission(user, "batch:approve")} canViewLogs={hasPermission(user, "logs:view")} />}
-              {view === "accounts" && <AccountCenter currentUser={user} notify={notify} />}
+              {activeView === "dashboard" && <WorkDashboard user={user} rules={activeRules} batches={workspace.data?.batches ?? []} shares={workspace.data?.shares ?? []} designs={designs} period={period} go={go} exportRules={() => exportRules(activeRules, notify)} />}
+              {activeView === "rules" && <RuleCenter rules={activeRules} notify={notify} onDesign={openDesigner} canDesign={hasPermission(user, "design:manage")} />}
+              {activeView === "designer" && (user.role === "reviewer" ? <DesignReviewCenter rules={rules} designs={designs} refresh={refresh} notify={notify} /> : <IndicatorDesigner key={designRule?.id ?? "designer"} rules={rules} designs={designs} initialRule={designRule} onInitialConsumed={() => setDesignRule(null)} refresh={refresh} notify={notify} />)}
+              {activeView === "simulator" && <Simulator key={`simulator-${period}`} user={user} people={workspace.data?.people ?? []} rules={activeRules} period={period} refresh={refresh} notify={notify} canSave={hasPermission(user, "batch:save")} />}
+              {activeView === "allocation" && <AllocationCenter user={user} people={workspace.data?.allocationPeople ?? []} rules={activeRules} shares={workspace.data?.shares ?? []} period={period} refresh={refresh} notify={notify} canManage={hasPermission(user, "allocation:manage")} />}
+              {activeView === "validation" && <ValidationCenter notify={notify} />}
+              {activeView === "approval" && <ApprovalCenter ruleCount={activeRules.length} batches={workspace.data?.batches ?? []} logs={workspace.data?.logs ?? []} period={period} refresh={refresh} notify={notify} canSubmit={hasPermission(user, "batch:submit")} canApprove={hasPermission(user, "batch:approve")} canViewLogs={hasPermission(user, "logs:view")} canSave={hasPermission(user, "batch:save")} />}
+              {activeView === "accounts" && <AccountCenter currentUser={user} notify={notify} />}
             </>
           )}
         </div>
@@ -201,15 +207,6 @@ function PageHead({ eyebrow, title, description, actions }: { eyebrow: string; t
   return <div className="page-head"><div><span className="eyebrow">{eyebrow}</span><h1>{title}</h1><p>{description}</p></div>{actions && <div className="page-actions">{actions}</div>}</div>;
 }
 
-function Modal({ title, children, onClose, wide = false }: { title: string; children: ReactNode; onClose: () => void; wide?: boolean }) {
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    document.addEventListener("keydown", handler); document.body.style.overflow = "hidden";
-    return () => { document.removeEventListener("keydown", handler); document.body.style.overflow = ""; };
-  }, [onClose]);
-  return <div className="modal-layer" role="presentation"><button className="modal-backdrop" onClick={onClose} aria-label="关闭弹窗" /><section className={`modal ${wide ? "wide" : ""}`} role="dialog" aria-modal="true" aria-labelledby="modal-title"><header><h2 id="modal-title">{title}</h2><button className="icon-button" onClick={onClose} aria-label="关闭"><X size={20} /></button></header><div className="modal-body">{children}</div></section></div>;
-}
-
 function RuleCenter({ rules, notify, onDesign, canDesign }: { rules: PricingRule[]; notify: (m: string, t?: Toast["tone"]) => void; onDesign: (rule?: PricingRule) => void; canDesign: boolean }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<"全部" | Category>("全部");
@@ -233,16 +230,22 @@ function Simulator({ user, people, rules, period, refresh, notify, canSave }: { 
   const [ruleId, setRuleId] = useState("S005");
   const [employee, setEmployee] = useState(user.employeeId);
   const [input, setInput] = useState<CalcInput>({ month: Number(period.split("-")[1]), directValue: 128, opening: 8600, current: 9320, previous: 9150, cap: null, floor: null });
-  const [saved, setSaved] = useState(false);
+  const [savedSignature, setSavedSignature] = useState<string | null>(null);
+  const selectedEmployee = people.some((person) => person.id === employee) ? employee : people[0]?.id ?? employee;
+  const signature = JSON.stringify({ ruleId, employee: selectedEmployee, input, period });
+  const saved = savedSignature === signature;
   const rule = rules.find((r) => r.id === ruleId) ?? rules[0];
   const result = rule ? calculate(rule, input) : null;
-  const saveMutation = trpc.pricing.saveBatch.useMutation({ onSuccess: () => { setSaved(true); refresh(); notify("试算批次已保存为草稿，可前往批次管理提交复核"); }, onError: (e) => notify(e.message, "error") });
-  useEffect(() => { setInput((v) => ({ ...v, month: Number(period.split("-")[1]) })); }, [period]);
-  useEffect(() => { setSaved(false); }, [ruleId, input, employee]);
-  useEffect(() => {
-    if (people.length && !people.some((person) => person.id === employee)) setEmployee(people[0].id);
-  }, [people, employee]);
-  const person = people.find((item) => item.id === employee) ?? people[0];
+  const saveMutation = trpc.pricing.saveBatch.useMutation({
+    onSuccess: (_data, variables) => {
+      const item = variables.snapshot[0];
+      setSavedSignature(JSON.stringify({ ruleId: item.ruleId, employee: item.employeeId, input: item.input, period: variables.period }));
+      refresh();
+      notify("试算批次已保存为草稿，可前往批次管理提交复核");
+    },
+    onError: (e) => notify(e.message, "error"),
+  });
+  const person = people.find((item) => item.id === selectedEmployee) ?? people[0];
   if (!rule || !result || !person) return <div className="empty-state"><Calculator size={30} /><p>暂无可用规则或计价人员</p></div>;
   const update = (key: keyof CalcInput, value: string) => setInput((v) => ({ ...v, [key]: value === "" && (key === "cap" || key === "floor") ? null : Number(value) }));
   const preset = (kind: "positive" | "negative" | "zero") => {
@@ -255,7 +258,7 @@ function Simulator({ user, people, rules, period, refresh, notify, canSave }: { 
     <div className="simulator-layout">
       <section className="panel simulator-form">
         <div className="step-title"><span>01</span><div><h2>选择计价对象</h2><p>人员、期间与产品规则</p></div></div>
-        <div className="form-grid two"><label>计价人员<select value={employee} onChange={(e) => setEmployee(e.target.value)}>{people.map((e) => <option key={e.id} value={e.id}>{e.name} · {e.branch} · {e.role}</option>)}</select></label><label>计价月份<input type="month" value={period} readOnly /></label></div>
+        <div className="form-grid two"><label>计价人员<select value={selectedEmployee} onChange={(e) => setEmployee(e.target.value)}>{people.map((e) => <option key={e.id} value={e.id}>{e.name} · {e.branch} · {e.role}</option>)}</select></label><label>计价月份<input type="month" value={period} readOnly /></label></div>
         <label className="field">计价产品<select value={ruleId} onChange={(e) => setRuleId(e.target.value)}>{rules.map((r) => <option key={r.id} value={r.id}>{r.category}｜{r.name}（{r.id}）</option>)}</select></label>
         <div className="selected-rule"><span className={`category-tag ${rule.category}`}>{rule.category}</span><strong>{METHOD_LABELS[rule.method]}</strong><small>{rule.unit} · {rule.sourceCode ?? "取数映射待配置"}</small></div>
         <div className="step-title second"><span>02</span><div><h2>录入业务数据</h2><p>{rule.definition ? `业务值单位：${rule.definition.sourceUnit}；公式换算除数 ${rule.definition.unitFactor}` : "金额单位：万元；户数/笔数按实际数量"}</p></div></div>
@@ -279,23 +282,82 @@ function Simulator({ user, people, rules, period, refresh, notify, canSave }: { 
   </>;
 }
 
-function AllocationCenter({ user, people, rules, shares, period, refresh, notify, canManage }: { user: AccessUser; people: Array<{ id: string; name: string; branch: string; role: string }>; rules: PricingRule[]; shares: Array<{ id: number; employeeName: string; employeeId: string; branch: string; ruleId: string; ratio: number; reason: string; status: string; period: string }>; period: string; refresh: () => void; notify: (m: string, t?: Toast["tone"]) => void; canManage: boolean }) {
+type AllocationRecord = {
+  id: number;
+  employeeName: string;
+  employeeId: string;
+  branch: string;
+  ruleId: string;
+  ratio: number;
+  reason: string;
+  status: string;
+  period: string;
+  confirmedAt: Date | null;
+};
+
+type AllocationCenterProps = {
+  user: AccessUser;
+  people: Array<{ id: string; name: string; branch: string; role: string }>;
+  rules: PricingRule[];
+  shares: AllocationRecord[];
+  period: string;
+  refresh: () => void;
+  notify: (m: string, t?: Toast["tone"]) => void;
+  canManage: boolean;
+};
+
+function AllocationCenter({ user, people, rules, shares, period, refresh, notify, canManage }: AllocationCenterProps) {
   const [open, setOpen] = useState(false);
+  const [confirmId, setConfirmId] = useState<number | null>(null);
+  const selectedShare = shares.find((share) => share.id === confirmId && share.period === period) ?? null;
+  const confirmMutation = trpc.pricing.confirmAllocation.useMutation({
+    onSuccess: () => { setConfirmId(null); refresh(); notify("本人分润归属已确认，确认时间已写入记录"); },
+  });
   const grouped = useMemo(() => {
-    const map = new Map<string, typeof shares>();
-    shares.forEach((s) => { const key = `${s.period}-${s.ruleId}`; map.set(key, [...(map.get(key) ?? []), s]); });
+    const map = new Map<string, AllocationRecord[]>();
+    shares.filter((share) => share.period === period).forEach((share) => {
+      const key = `${share.period}-${share.ruleId}`;
+      map.set(key, [...(map.get(key) ?? []), share]);
+    });
     return [...map.entries()];
-  }, [shares]);
+  }, [shares, period]);
+
+  const openConfirmation = (id: number) => {
+    confirmMutation.reset();
+    setConfirmId(id);
+  };
+
   return <>
-    <PageHead eyebrow={`${period} · ${ROLE_DEFINITIONS[user.role].scopeLabel}`} title="业绩归属与分润" description={canManage ? "登记协同人员和分润比例。系统核对人员机构，并阻止同一期间、同一产品的比例合计超过100%。" : "查看本人参与的分润记录、所属机构、比例和确认状态。当前岗位不能修改分润。"} actions={canManage ? <button className="button primary" onClick={() => setOpen(true)}><Plus size={17} />新增分润</button> : undefined} />
-    <section className="allocation-principles"><div><Users size={21} /><strong>人员与比例</strong><p>同一期间、同一产品的分润比例合计不得超过100%</p></div><div><Building2 size={21} /><strong>机构范围</strong><p>负责人限本机构，客户经理登记本人参与的本机构协作</p></div><div><Network size={21} /><strong>记录可查</strong><p>保存实际操作人和时间，员工可核对本人参与记录</p></div></section>
-    <section className="panel table-panel"><div className="panel-head padded"><div><h2>分润方案</h2><p>{period} · {canManage ? "可新增协同业务" : "当前岗位只读"}</p></div><span className="status-badge success"><Check size={13} />比例自动校验</span></div>
-      {grouped.length === 0 ? <div className="empty-state"><GitBranch size={30} /><h3>暂无分润记录</h3><p>{canManage ? "可新增一笔协同业务，明确人员、比例与原因。" : "当前期间和权限范围内没有可查看的记录。"}</p></div> : <div className="allocation-groups">{grouped.map(([key, rows]) => {
-        const total = rows.reduce((sum, r) => sum + r.ratio, 0); const rule = rules.find((r) => r.id === rows[0].ruleId);
-        return <div className="allocation-group" key={key}><div className="allocation-group-head"><div><span>{rows[0].period}</span><strong>{rule?.name ?? rows[0].ruleId}</strong></div><span className={`status-badge ${Math.abs(total - 100) < 0.001 ? "success" : "warning"}`}>合计 {total}%</span></div>{rows.map((s) => <div className="share-row" key={s.id}><span className="avatar small">{s.employeeName.slice(0, 1)}</span><div><strong>{s.employeeName}<small>{s.employeeId}</small></strong><p>{s.branch} · {s.reason}</p></div><div className="ratio-visual"><span><i style={{ width: `${s.ratio}%` }} /></span><b>{s.ratio}%</b></div><span className={`status-badge ${s.status === "approved" ? "success" : "warning"}`}>{s.status === "approved" ? "已确认" : "待确认"}</span></div>)}</div>;
+    <PageHead eyebrow={`${period} · ${ROLE_DEFINITIONS[user.role].scopeLabel}`} title="业绩归属与分润" description={canManage ? "登记协同人员和分润比例，并由各参与人确认本人记录。系统核对人员机构和比例合计。" : "查看并确认本人分润记录、所属机构和比例；不能修改分润或代替他人确认。"} actions={canManage ? <button className="button primary" onClick={() => setOpen(true)}><Plus size={17} />新增分润</button> : undefined} />
+    <section className="allocation-principles"><div><Users size={21} /><strong>人员与比例</strong><p>同一期间、同一产品的分润比例合计不得超过100%</p></div><div><Building2 size={21} /><strong>机构范围</strong><p>负责人限本机构，客户经理登记本人参与的本机构协作</p></div><div><Network size={21} /><strong>本人确认</strong><p>员工核对并确认本人记录，确认人和时间留痕</p></div></section>
+    <section className="panel table-panel"><div className="panel-head padded"><div><h2>分润方案</h2><p>{period} · {canManage ? "可新增协同业务，本人记录可确认" : "本人记录可确认，其他记录只读"}</p></div><span className="status-badge success"><Check size={13} />比例自动校验</span></div>
+      {grouped.length === 0 ? <div className="empty-state"><GitBranch size={30} /><h3>本期暂无分润记录</h3><p>{canManage ? "可新增一笔协同业务，明确人员、比例与原因。" : `${period} 在当前权限范围内没有可查看的记录。`}</p></div> : <div className="allocation-groups">{grouped.map(([key, rows]) => {
+        const total = rows.reduce((sum, share) => sum + share.ratio, 0);
+        const rule = rules.find((item) => item.id === rows[0].ruleId);
+        return <div className="allocation-group" key={key}>
+          <div className="allocation-group-head"><div><span>{rows[0].period}</span><strong>{rule?.name ?? rows[0].ruleId}</strong></div><span className={`status-badge ${Math.abs(total - 100) < 0.001 ? "success" : "warning"}`}>合计 {total}%</span></div>
+          {rows.map((share) => <div className="share-row" key={share.id}>
+            <span className="avatar small">{share.employeeName.slice(0, 1)}</span>
+            <div><strong>{share.employeeName}<small>{share.employeeId}</small></strong><p>{share.branch} · {share.reason}</p></div>
+            <div className="ratio-visual"><span><i style={{ width: `${share.ratio}%` }} /></span><b>{share.ratio}%</b></div>
+            {share.status === "approved" ? <span className="status-badge success" title={share.confirmedAt ? `确认于 ${new Date(share.confirmedAt).toLocaleString("zh-CN", { hour12: false })}` : "历史已确认记录"}>已确认</span> : share.employeeId === user.employeeId ? <button className="button secondary share-confirm-button" onClick={() => openConfirmation(share.id)}>确认无误</button> : <span className="status-badge warning" title="仅记录归属人本人可确认">待本人确认</span>}
+          </div>)}
+        </div>;
       })}</div>}
     </section>
     {canManage && open && <AllocationForm people={people} rules={rules} period={period} onClose={() => setOpen(false)} onSaved={() => { setOpen(false); refresh(); notify("分润记录已保存，操作人已写入记录"); }} />}
+    {selectedShare && <Modal title="确认本人分润" onClose={() => setConfirmId(null)}>
+      <p>请核对以下归属信息。确认仅表示本人认可本次产品分润比例和依据，不代表薪酬审批或结果发布。</p>
+      <dl className="allocation-confirm-detail">
+        <div><dt>所属期间</dt><dd>{selectedShare.period}</dd></div>
+        <div><dt>计价产品</dt><dd>{rules.find((rule) => rule.id === selectedShare.ruleId)?.name ?? selectedShare.ruleId}</dd></div>
+        <div><dt>归属人员</dt><dd>{selectedShare.employeeName} · {selectedShare.employeeId} · {selectedShare.branch}</dd></div>
+        <div><dt>分润比例</dt><dd><strong>{selectedShare.ratio}%</strong></dd></div>
+        <div><dt>分润依据</dt><dd>{selectedShare.reason}</dd></div>
+      </dl>
+      {confirmMutation.error && <p className="form-error" role="alert"><CircleAlert size={15} />{confirmMutation.error.message}</p>}
+      <div className="modal-actions"><button className="button secondary" onClick={() => setConfirmId(null)} disabled={confirmMutation.isPending}>再核对一下</button><button className="button primary" disabled={confirmMutation.isPending} onClick={() => confirmMutation.mutate({ id: selectedShare.id })}>{confirmMutation.isPending ? "正在确认…" : "确认本人分润"}<Check size={16} /></button></div>
+    </Modal>}
   </>;
 }
 
@@ -335,31 +397,72 @@ function ValidationCenter({ notify }: { notify: (m: string, t?: Toast["tone"]) =
   </>;
 }
 
-function ApprovalCenter({ ruleCount, batches, logs, refresh, notify, canSubmit, canApprove, canViewLogs }: { ruleCount: number; batches: Array<{ id: number; title: string; period: string; totalScore: number; employeeCount: number; status: string; createdAt: Date; approvedAt: Date | null; createdByName?: string }>; logs: Array<{ id: number; action: string; actor: string; objectType: string; objectId: string; detail: string; createdAt: Date }>; refresh: () => void; notify: (m: string, t?: Toast["tone"]) => void; canSubmit: boolean; canApprove: boolean; canViewLogs: boolean }) {
+type ApprovalCenterProps = {
+  ruleCount: number;
+  batches: BatchRecord[];
+  logs: Array<{ id: number; action: string; actor: string; objectType: string; objectId: string; detail: string; createdAt: Date }>;
+  period: string;
+  refresh: () => void;
+  notify: (m: string, t?: Toast["tone"]) => void;
+  canSubmit: boolean;
+  canApprove: boolean;
+  canViewLogs: boolean;
+  canSave: boolean;
+};
+
+function ApprovalCenter({ ruleCount, batches, logs, period, refresh, notify, canSubmit, canApprove, canViewLogs, canSave }: ApprovalCenterProps) {
   const [tab, setTab] = useState<"batches" | "logs">("batches");
-  const [confirmId, setConfirmId] = useState<number | null>(null);
-  const submit = trpc.pricing.submitBatch.useMutation({ onSuccess: () => { refresh(); notify("批次已提交复核"); }, onError: (e) => notify(e.message, "error") });
-  const approve = trpc.pricing.approveBatch.useMutation({ onSuccess: () => { setConfirmId(null); refresh(); notify("审批完成，批次与规则快照已锁定"); }, onError: (e) => notify(e.message, "error") });
+  const [detailId, setDetailId] = useState<number | null>(null);
+  const visibleBatches = batches.filter((batch) => batch.period === period);
+  const selectedBatch = visibleBatches.find((batch) => batch.id === detailId) ?? null;
+  const submit = trpc.pricing.submitBatch.useMutation({
+    onSuccess: () => { refresh(); notify("批次已提交复核，等待独立复核人员办理"); },
+    onError: (error) => notify(error.message, "error"),
+  });
   const statusText: Record<string, string> = { draft: "草稿", review: "复核中", locked: "已锁定" };
+
+  const exportBatches = () => {
+    exportCsv(`${period}计价批次台账.csv`, ["批次号", "名称", "期间", "人数", "总积分", "状态"], visibleBatches.map((batch) => [batch.id, batch.title, batch.period, batch.employeeCount, batch.totalScore, statusText[batch.status] ?? batch.status]));
+    notify(`已导出${period}的${visibleBatches.length}个批次`);
+  };
+
   return <>
-    <PageHead eyebrow="批次办理" title="批次复核与记录" description={canApprove ? "核对复核中批次并审批锁定。提交与审批分离，历史批次保留当时的结果和规则版本。" : canSubmit ? "保存草稿后提交复核，由独立复核人员审批锁定；提交后不能再按草稿重复提交。" : "查看权限范围内的批次状态、结果和操作记录。当前岗位为只读权限。"} actions={<button className="button secondary" onClick={() => { exportCsv("计价批次台账.csv", ["批次号", "名称", "期间", "人数", "总积分", "状态"], batches.map((b) => [b.id, b.title, b.period, b.employeeCount, b.totalScore, statusText[b.status]])); notify("批次台账已导出"); }}><Download size={17} />导出台账</button>} />
+    <PageHead
+      eyebrow={`${period} · 批次办理`}
+      title="批次复核与记录"
+      description={canApprove ? "逐条核对业务输入、计算过程和规则快照，可填写原因退回或审批锁定。提交与审批分离。" : canSubmit ? "查看批次明细和退回原因，修改后重新提交，由独立复核人员审批锁定。" : "查看权限范围内的批次明细、结果和操作记录。当前岗位为只读权限。"}
+      actions={<button className="button secondary" onClick={exportBatches}><Download size={17} />导出台账</button>}
+    />
     <div className="version-banner"><div><LockKeyhole size={24} /><span><strong>2026年计价规则</strong><small>{ruleCount}项正式指标 · 历史批次保留当时的规则与结果记录</small></span></div><span className="status-badge success"><CircleCheck size={14} />当前年度</span></div>
-    <div className="tab-bar"><button className={tab === "batches" ? "active" : ""} onClick={() => setTab("batches")}><Layers3 size={17} />计价批次<span>{batches.length}</span></button>{canViewLogs && <button className={tab === "logs" ? "active" : ""} onClick={() => setTab("logs")}><BookOpen size={17} />操作日志<span>{logs.length}</span></button>}</div>
-    {tab === "batches" ? <section className="batch-list">{batches.length === 0 && <div className="empty-state"><Layers3 size={30} /><h3>暂无计价批次</h3><p>当前权限范围内没有可查看的批次记录。</p></div>}{batches.map((b) => <article className="batch-card" key={b.id}><div className="batch-id"><span>批次</span><strong>#{String(b.id).padStart(5, "0")}</strong></div><div className="batch-info"><div><h2>{b.title}</h2><span className={`status-badge ${b.status === "locked" ? "success" : b.status === "review" ? "warning" : ""}`}>{b.status === "locked" && <LockKeyhole size={12} />}{statusText[b.status]}</span></div><p>{b.period} · {b.employeeCount}名计价人员 · {b.createdByName ? `创建人 ${b.createdByName} · ` : ""}创建于 {new Date(b.createdAt).toLocaleDateString("zh-CN")}</p></div><div className="batch-score"><span>合计积分</span><strong>{b.totalScore.toLocaleString("zh-CN", { minimumFractionDigits: 2 })}</strong></div><div className="batch-actions">{b.status === "draft" && canSubmit && <button className="button primary" disabled={submit.isPending} onClick={() => submit.mutate({ id: b.id })}><Send size={16} />提交复核</button>}{b.status === "review" && canApprove && <button className="button primary" onClick={() => setConfirmId(b.id)}><BadgeCheck size={16} />审批锁定</button>}{((b.status === "draft" && !canSubmit) || (b.status === "review" && !canApprove)) && <span className="small-muted">{b.status === "review" ? "等待复核人员办理" : "草稿只读"}</span>}{b.status === "locked" && <button className="button secondary" onClick={() => { exportCsv(`批次${b.id}-结果快照.csv`, ["字段", "值"], [["批次", b.title], ["期间", b.period], ["总积分", b.totalScore], ["状态", "已锁定"]]); notify("锁定批次凭证已导出"); }}><Download size={16} />导出凭证</button>}</div></article>)}</section> : <section className="panel log-panel"><div className="log-timeline">{logs.map((l) => <div className="log-row" key={l.id}><span className="log-dot" /><div><strong>{l.action}<small>{l.objectType} · {l.objectId}</small></strong><p>{l.detail}</p></div><div><span>{l.actor}</span><time>{new Date(l.createdAt).toLocaleString("zh-CN", { hour12: false })}</time></div></div>)}</div></section>}
-    {canApprove && confirmId !== null && <Modal title="确认审批并锁定？" onClose={() => setConfirmId(null)}><div className="confirm-content"><LockKeyhole size={36} /><p>锁定后，本批次的结果快照与适用规则版本将不可被后续规则修改覆盖。如需调整，应新建冲正或补录批次。</p></div><div className="modal-actions"><button className="button secondary" onClick={() => setConfirmId(null)}>再检查一下</button><button className="button primary" disabled={approve.isPending} onClick={() => approve.mutate({ id: confirmId })}>{approve.isPending ? "处理中…" : "确认审批锁定"}<LockKeyhole size={16} /></button></div></Modal>}
+    <div className="tab-bar">
+      <button className={tab === "batches" ? "active" : ""} onClick={() => setTab("batches")}><Layers3 size={17} />计价批次<span>{visibleBatches.length}</span></button>
+      {canViewLogs && <button className={tab === "logs" ? "active" : ""} onClick={() => setTab("logs")}><BookOpen size={17} />操作日志<span>{logs.length}</span></button>}
+    </div>
+    {tab === "batches" ? <section className="batch-list">
+      {visibleBatches.length === 0 && <div className="empty-state"><Layers3 size={30} /><h3>本期暂无计价批次</h3><p>{period} 在当前权限范围内没有可查看的批次记录。</p></div>}
+      {visibleBatches.map((batch) => <article className="batch-card" key={batch.id}>
+        <div className="batch-id"><span>批次</span><strong>#{String(batch.id).padStart(5, "0")}</strong></div>
+        <div className="batch-info">
+          <div><h2>{batch.title}</h2><span className={`status-badge ${batch.status === "locked" ? "success" : batch.status === "review" ? "warning" : ""}`}>{batch.status === "locked" && <LockKeyhole size={12} />}{statusText[batch.status] ?? batch.status}</span></div>
+          <p>{batch.period} · {batch.employeeCount}名计价人员 · {batch.createdByName ? `创建人 ${batch.createdByName} · ` : ""}创建于 {new Date(batch.createdAt).toLocaleDateString("zh-CN")}</p>
+          {batch.returnReason && batch.status === "draft" && <p className="batch-return-inline">最近退回：{batch.returnReason}</p>}
+        </div>
+        <div className="batch-score"><span>合计积分</span><strong>{batch.totalScore.toLocaleString("zh-CN", { minimumFractionDigits: 2 })}</strong></div>
+        <div className="batch-actions">
+          <button className="button secondary" onClick={() => setDetailId(batch.id)}><Eye size={16} />查看明细</button>
+          {batch.status === "draft" && canSubmit && <button className="button primary" disabled={submit.isPending} onClick={() => submit.mutate({ id: batch.id })}><Send size={16} />{batch.returnReason ? "重新提交" : "提交复核"}</button>}
+          {batch.status === "review" && canApprove && <button className="button primary" onClick={() => setDetailId(batch.id)}><BadgeCheck size={16} />进入复核</button>}
+          {((batch.status === "draft" && !canSubmit) || (batch.status === "review" && !canApprove)) && <span className="small-muted">{batch.status === "review" ? "等待复核人员办理" : "草稿只读"}</span>}
+        </div>
+      </article>)}
+    </section> : <section className="panel log-panel"><div className="log-timeline">{logs.map((log) => <div className="log-row" key={log.id}><span className="log-dot" /><div><strong>{log.action}<small>{log.objectType} · {log.objectId}</small></strong><p>{log.detail}</p></div><div><span>{log.actor}</span><time>{new Date(log.createdAt).toLocaleString("zh-CN", { hour12: false })}</time></div></div>)}</div></section>}
+    {selectedBatch && <BatchDetailModal batch={selectedBatch} canApprove={canApprove} canEdit={canSave} refresh={refresh} notify={notify} onClose={() => setDetailId(null)} />}
   </>;
 }
 
 function exportRules(rules: PricingRule[], notify: (m: string, t?: Toast["tone"]) => void) {
   exportCsv("2026年全员全产品计价规则.csv", ["规则ID", "指标名称", "类别", "分组", "单位", "计算方式", "存量总量", "正增长", "负增长", "取数M码", "积分M码"], rules.map((r) => [r.id, r.name, r.category, r.group, r.unit, METHOD_LABELS[r.method], r.stockRate ?? "", r.positiveRate ?? "", r.negativeRate ?? "", r.metricCode ?? "", r.sourceCode ?? ""]));
   notify(`已导出${rules.length}项计价规则`);
-}
-
-function exportCsv(filename: string, headers: string[], rows: Array<Array<string | number>>) {
-  const escape = (v: string | number) => `"${String(v).replaceAll('"', '""')}"`;
-  const csv = "﻿" + [headers, ...rows].map((row) => row.map(escape).join(",")).join("\r\n");
-  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
-  const a = document.createElement("a"); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url);
 }
 
 function App() {

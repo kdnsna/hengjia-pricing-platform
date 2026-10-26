@@ -8,6 +8,7 @@ import { calculate, DEMO_EMPLOYEES, PRICING_RULES, type CalcInput, type Indicato
 import { hasPermission, type AccessUser } from "@contracts/access";
 import { definitionToRule, testIndicator, validateIndicator } from "@contracts/indicator";
 import { recordAudit } from "./audit";
+import { assertAllocationConfirmation, assertBatchAction } from "./workflow";
 
 async function log(user: AccessUser | null, action: string, objectType: string, objectId: string, detail: string) {
   await recordAudit(user, action, objectType, objectId, detail);
@@ -82,6 +83,8 @@ const batchSnapshotSchema = z.object({
   score: z.number().finite(),
   expression: z.string().max(4000),
 }).passthrough();
+
+type BatchSnapshotInput = z.infer<typeof batchSnapshotSchema>;
 
 async function getDesign(id: number) {
   const row = await getDb().query.indicatorDesigns.findFirst({ where: eq(indicatorDesigns.id, id) });
@@ -161,6 +164,39 @@ async function getBatch(id: number) {
   const batch = await getDb().query.batches.findFirst({ where: eq(batches.id, id) });
   if (!batch) throw new TRPCError({ code: "NOT_FOUND", message: "计价批次不存在" });
   return batch;
+}
+
+async function checkBatchSnapshot(user: AccessUser, items: BatchSnapshotInput[], verifyScores = true) {
+  const db = getDb();
+  const [ruleRows, allowedPeople] = await Promise.all([
+    db.select().from(pricingRules),
+    peopleFor(user),
+  ]);
+  const peopleById = new Map(allowedPeople.map((person) => [person.id, person]));
+  const rulesById = new Map(ruleRows.map((rule) => [rule.id, rule]));
+  const checkedSnapshot = [];
+  for (const item of items) {
+    const person = peopleById.get(item.employeeId);
+    if (!person) throw new TRPCError({ code: "FORBIDDEN", message: `人员 ${item.employeeId} 不在当前账号的数据范围内` });
+    const ruleRow = rulesById.get(item.ruleId);
+    if (!ruleRow || ruleRow.status !== "active") throw new TRPCError({ code: "BAD_REQUEST", message: `指标 ${item.ruleId} 当前不可用于正式试算` });
+    if (item.ruleVersion !== ruleRow.version) throw new TRPCError({ code: "CONFLICT", message: `${item.ruleName} 已更新为V${ruleRow.version}，请刷新后重新试算` });
+    const result = calculate(asRule(ruleRow), item.input as CalcInput);
+    if (verifyScores && Math.abs(result.score - item.score) > 0.001) throw new TRPCError({ code: "BAD_REQUEST", message: `${item.ruleName} 的浏览器结果与服务端复算不一致，请重新计算` });
+    checkedSnapshot.push({
+      employee: person.name,
+      employeeId: person.id,
+      ruleId: ruleRow.id,
+      ruleName: ruleRow.name,
+      ruleVersion: ruleRow.version,
+      ruleDefinition: ruleRow.definition,
+      input: item.input,
+      score: result.score,
+      expression: result.expression,
+      branch: person.branch,
+    });
+  }
+  return checkedSnapshot;
 }
 
 export async function ensureSeed() {
@@ -373,38 +409,27 @@ export const pricingRouter = createRouter({
     return { ok: true };
   }),
 
+  confirmAllocation: authedQuery.input(z.object({ id: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
+    const db = getDb();
+    const allocation = await db.query.allocations.findFirst({ where: eq(allocations.id, input.id) });
+    if (!allocation) throw new TRPCError({ code: "NOT_FOUND", message: "分润记录不存在" });
+    assertAllocationConfirmation(allocation, ctx.user);
+    const confirmedAt = new Date();
+    const [result] = await db.update(allocations).set({ status: "approved", confirmedBy: ctx.user.id, confirmedAt }).where(and(
+      eq(allocations.id, input.id),
+      eq(allocations.employeeId, ctx.user.employeeId),
+      eq(allocations.status, "pending"),
+    ));
+    if (!result.affectedRows) throw new TRPCError({ code: "CONFLICT", message: "分润状态已变化，请刷新后再确认" });
+    await log(ctx.user, "确认分润", "业绩分润", String(input.id), `${allocation.period} ${allocation.ruleId} ${allocation.employeeName}确认${allocation.ratio}%分润归属`);
+    return { ok: true, confirmedAt };
+  }),
+
   saveBatch: permittedQuery("batch:save").input(z.object({
     period: z.string().regex(/^\d{4}-\d{2}$/), title: z.string().trim().min(2).max(100), totalScore: z.number().finite(), employeeCount: z.number().int().positive().max(500), snapshot: z.array(batchSnapshotSchema).min(1).max(500),
   })).mutation(async ({ ctx, input }) => {
     const db = getDb();
-    const [ruleRows, allowedPeople] = await Promise.all([
-      db.select().from(pricingRules),
-      peopleFor(ctx.user),
-    ]);
-    const peopleById = new Map(allowedPeople.map((person) => [person.id, person]));
-    const rulesById = new Map(ruleRows.map((rule) => [rule.id, rule]));
-    const checkedSnapshot = [];
-    for (const item of input.snapshot) {
-      const person = peopleById.get(item.employeeId);
-      if (!person) throw new TRPCError({ code: "FORBIDDEN", message: `人员 ${item.employeeId} 不在当前账号的数据范围内` });
-      const ruleRow = rulesById.get(item.ruleId);
-      if (!ruleRow || ruleRow.status !== "active") throw new TRPCError({ code: "BAD_REQUEST", message: `指标 ${item.ruleId} 当前不可用于正式试算` });
-      if (item.ruleVersion !== ruleRow.version) throw new TRPCError({ code: "CONFLICT", message: `${item.ruleName} 已更新为V${ruleRow.version}，请刷新后重新试算` });
-      const result = calculate(asRule(ruleRow), item.input as CalcInput);
-      if (Math.abs(result.score - item.score) > 0.001) throw new TRPCError({ code: "BAD_REQUEST", message: `${item.ruleName} 的浏览器结果与服务端复算不一致，请重新计算` });
-      checkedSnapshot.push({
-        employee: person.name,
-        employeeId: person.id,
-        ruleId: ruleRow.id,
-        ruleName: ruleRow.name,
-        ruleVersion: ruleRow.version,
-        ruleDefinition: ruleRow.definition,
-        input: item.input,
-        score: result.score,
-        expression: result.expression,
-        branch: person.branch,
-      });
-    }
+    const checkedSnapshot = await checkBatchSnapshot(ctx.user, input.snapshot);
     const employeeIds = new Set(checkedSnapshot.map((item) => item.employeeId));
     const branchNames = new Set(checkedSnapshot.map((item) => item.branch));
     if (employeeIds.size !== input.employeeCount) throw new TRPCError({ code: "BAD_REQUEST", message: "计价人数与明细中的实际人数不一致" });
@@ -426,20 +451,62 @@ export const pricingRouter = createRouter({
     return { ok: true, id };
   }),
 
+  updateBatch: permittedQuery("batch:save").input(z.object({
+    id: z.number().int().positive(),
+    title: z.string().trim().min(2).max(100),
+    snapshot: z.array(batchSnapshotSchema).min(1).max(500),
+  })).mutation(async ({ ctx, input }) => {
+    const batch = await getBatch(input.id);
+    assertBatchAction(batch, "edit", ctx.user);
+    const checkedSnapshot = await checkBatchSnapshot(ctx.user, input.snapshot, false);
+    const employeeIds = new Set(checkedSnapshot.map((item) => item.employeeId));
+    const branchNames = new Set(checkedSnapshot.map((item) => item.branch));
+    const computedTotal = Number(checkedSnapshot.reduce((sum, item) => sum + item.score, 0).toFixed(2));
+    const [result] = await getDb().update(batches).set({
+      title: input.title,
+      totalScore: computedTotal,
+      employeeCount: employeeIds.size,
+      resultSnapshot: checkedSnapshot,
+      ownerEmployeeId: employeeIds.size === 1 ? [...employeeIds][0] : "",
+      ownerBranch: branchNames.size === 1 ? [...branchNames][0] : ctx.user.branch,
+    }).where(and(eq(batches.id, input.id), eq(batches.status, "draft")));
+    if (!result.affectedRows) throw new TRPCError({ code: "CONFLICT", message: "批次状态已变化，请刷新后再修改" });
+    await log(ctx.user, "修改批次", "计价批次", String(input.id), `${batch.title}：服务端重新复算 ${checkedSnapshot.length} 条明细，积分由 ${batch.totalScore.toFixed(2)} 调整为 ${computedTotal.toFixed(2)}`);
+    return { ok: true, id: input.id, totalScore: computedTotal, employeeCount: employeeIds.size };
+  }),
+
   submitBatch: permittedQuery("batch:submit").input(z.object({ id: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
     const batch = await getBatch(input.id);
-    if (batch.status !== "draft") throw new TRPCError({ code: "CONFLICT", message: "只有草稿批次可以提交复核" });
-    if (ctx.user.scope === "branch" && batch.ownerBranch !== ctx.user.branch) throw new TRPCError({ code: "FORBIDDEN", message: "不能提交其他机构的批次" });
-    await getDb().update(batches).set({ status: "review", submittedBy: ctx.user.id, submittedAt: new Date() }).where(eq(batches.id, input.id));
-    await log(ctx.user, "提交复核", "计价批次", String(input.id), `${batch.title} 已提交复核，等待审批锁定`);
+    assertBatchAction(batch, "submit", ctx.user);
+    const [result] = await getDb().update(batches).set({ status: "review", submittedBy: ctx.user.id, submittedAt: new Date() }).where(and(eq(batches.id, input.id), eq(batches.status, "draft")));
+    if (!result.affectedRows) throw new TRPCError({ code: "CONFLICT", message: "批次状态已变化，请刷新后重新提交" });
+    await log(ctx.user, "提交复核", "计价批次", String(input.id), `${batch.title} ${batch.returnReason ? "退回后重新提交" : "已提交复核"}，等待独立复核`);
+    return { ok: true };
+  }),
+
+  returnBatch: permittedQuery("batch:approve").input(z.object({ id: z.number().int().positive(), reason: z.string().trim().min(4).max(500) })).mutation(async ({ ctx, input }) => {
+    const batch = await getBatch(input.id);
+    assertBatchAction(batch, "return", ctx.user);
+    const returnedAt = new Date();
+    const [result] = await getDb().update(batches).set({
+      status: "draft",
+      returnReason: input.reason,
+      returnedBy: ctx.user.id,
+      returnedByName: ctx.user.name,
+      returnedAt,
+      submittedBy: null,
+      submittedAt: null,
+    }).where(and(eq(batches.id, input.id), eq(batches.status, "review")));
+    if (!result.affectedRows) throw new TRPCError({ code: "CONFLICT", message: "批次状态已变化，请刷新后再办理退回" });
+    await log(ctx.user, "退回批次", "计价批次", String(input.id), `${batch.title} 退回修改：${input.reason}`);
     return { ok: true };
   }),
 
   approveBatch: permittedQuery("batch:approve").input(z.object({ id: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
     const batch = await getBatch(input.id);
-    if (batch.status !== "review") throw new TRPCError({ code: "CONFLICT", message: "只有复核中的批次可以审批锁定" });
-    if (batch.submittedBy === ctx.user.id) throw new TRPCError({ code: "FORBIDDEN", message: "提交人不能审批本人提交的批次，请由其他复核人员办理" });
-    await getDb().update(batches).set({ status: "locked", approvedBy: ctx.user.id, approvedAt: new Date() }).where(eq(batches.id, input.id));
+    assertBatchAction(batch, "approve", ctx.user);
+    const [result] = await getDb().update(batches).set({ status: "locked", approvedBy: ctx.user.id, approvedAt: new Date() }).where(and(eq(batches.id, input.id), eq(batches.status, "review")));
+    if (!result.affectedRows) throw new TRPCError({ code: "CONFLICT", message: "批次状态已变化，请刷新后再办理审批" });
     await log(ctx.user, "审批锁定", "计价批次", String(input.id), `${batch.title} 审批通过，结果明细与适用规则版本已锁定`);
     return { ok: true };
   }),

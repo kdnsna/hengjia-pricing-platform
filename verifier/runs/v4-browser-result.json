@@ -1,9 +1,9 @@
 {
   "status": "pass",
-  "startedAt": "2026-10-26T01:25:33.110Z",
-  "finishedAt": "2026-10-26T01:26:17.370Z",
-  "command": "VERIFY_ORIGIN=http://localhost:3100 node verifier/v4/verify-browser.mjs",
-  "baseUrl": "http://localhost:3100",
+  "startedAt": "2026-10-26T05:19:32.830Z",
+  "finishedAt": "2026-10-26T05:19:57.181Z",
+  "command": "VERIFY_ORIGIN=http://localhost:3000 node verifier/v4/verify-browser.mjs",
+  "baseUrl": "http://localhost:3000",
   "checkCount": 31,
   "checks": [
     "独立页面测试设计稿已创建并提交，四组提交测试快照由服务端保存",
@@ -425,14 +425,14 @@
   "badResponses": [],
   "pagePerformance": {
     "resourceCount": 5,
-    "transferBytes": 925416,
-    "domContentLoadedMs": 294,
-    "loadMs": 295
+    "transferBytes": 900214,
+    "domContentLoadedMs": 43,
+    "loadMs": 43
   },
   "readback": {
     "initial": {
-      "designId": 584672,
-      "ruleId": "BMVOKRNEE",
+      "designId": 2,
+      "ruleId": "BMVOT4KIN",
       "status": "review"
     },
     "independentTests": [
@@ -448,8 +448,8 @@
     "final": {
       "status": "archived",
       "formalRuleCreated": false,
-      "designId": 584672,
-      "ruleId": "BMVOKRNEE"
+      "designId": 2,
+      "ruleId": "BMVOT4KIN"
     }
   },
   "designArchived": true,

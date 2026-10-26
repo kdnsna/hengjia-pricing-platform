@@ -1,0 +1,160 @@
+items:
+- short_id: pu9ToBED
+  seed: |
+    # Narrative
+
+    A supply chain intelligence dashboard for procurement professionals. The interface presents as a mission control center: live data feeds, geopolitical risk maps, commodity price tracking, and AI-assisted analysis. The narrative flows from top-level alerts (ticker banner) through strategic impact cards to a central interactive map, then down to detailed commodity charts and risk panels. The design language borrows from military/intelligence aesthetics—dark surfaces, glowing status indicators, and data-dense layouts—while maintaining the clarity of a financial terminal.
+
+    # Tech Stack
+
+    Vanilla HTML/CSS/JS single-page application. GL-based mapping library for interactive maps. Google Fonts (JetBrains Mono, Inter). CSS custom properties for theming with three modes: Intelligence (default cyan/amber), Tactical (green), and Light (office/daylight). No framework dependencies; custom-built component system.
+
+    # Layout
+
+    Three-column dashboard layout: left panel (280px) for layer controls and watchlists, center for the interactive map (fluid), right panel (380px) for alerts and actions. Fixed header with traffic-light indicators, live monitor badge, and ticker banner. Mission Control hero section spans full width with collapsible executive summary. Bottom section features horizontally-scrolling chart panels (2 visible, 1 peeking) and three-column info grid. Dense information architecture with 12px base grid and 1px hairline borders.
+
+    # Typography
+
+    Dual-font system: JetBrains Mono for all UI chrome, labels, data points, and monospace needs (300-700 weights); Inter for AI chat bubbles and longer reading content (400-800 weights). Heavy use of uppercase with wide letter-spacing (0.08em-0.22em) for labels and section headers. Type hierarchy established through size (9px-32px), weight, and tracking rather than color alone.
+
+    # Color
+
+    Dark intelligence palette: background `#050810`, panels `#0c1220`/`#111a2b`, borders `#1a2540`. Primary accent cyan `#22d3ee` for active/live states. Secondary accents: mint green `#34d399` (positive/safe), amber `#fbbf24` (warnings), red `#f87171` (critical). Color-coded semantic system: commodity tags cyan, energy amber, freight magenta, labor green. Three theme variants with full CSS variable swaps. Subtle radial gradients in background for depth.
+
+    # Imagery
+
+    SVG-based stylized world map with animated flow lines (stroke-dasharray animation) and pulsing location dots. No photographic imagery—visual language is entirely vector-based: geometric icons, status LEDs, radar-style animated logo. Third-party map tile integration with dark theme overrides. External weather service integration for overlay thumbnails.
+
+    # Components
+
+    **Status indicators**: Custom "radar-node" checkboxes replacing standard inputs—circular with glowing ring and center dot when active. **Alert cards**: Left-border accent system (3px) with color-coded severity. **Action pills**: Inline status badges with pulsing dot animation. **Ticker banner**: Marquee-style scrolling alerts with pause-on-hover. **AI chat interface**: AI assistant chat with gradient emblem, message bubbles with left accent border, and suggested action chips. **Mission Control gauge**: Large bordered badge with animated pulsing dot and level indicator bars.
+
+    # Motion
+
+    Continuous ambient animations: pulsing dots (1.4-1.6s ease-in-out), radar sweep rotation (4.2s linear infinite), ticker scroll (48s linear), map flow lines (30s dash offset). Entrance animations for AI chat messages (fade + translateY). Hover transitions on all interactive elements (0.15s ease). Collapsible sections with max-height and opacity transitions (0.42s cubic-bezier). Reduced-motion media query support throughout.
+
+    # Algorithms
+
+    Standard implementation, no special design.
+
+    # Material
+
+    Digital surface aesthetic: subtle noise/scanline overlay (repeating-linear-gradient at 3px intervals), glassmorphism on floating elements (backdrop-filter blur 6-10px), soft shadows with colored glow accents. No physical material simulation—purely digital texture.
+
+    # Craft
+
+    **Scrollbar**: Custom 6px thin scrollbar with themed colors. **Focus states**: Visible focus rings using box-shadow with primary color. **Loading states**: Skeleton placeholders with animated pulse. **Empty states**: Dashed border containers with contextual hints. **Cookie banner**: Fixed bottom-left with gradient top border and pulsing privacy indicator. **Pro feature blur**: Dynamic blur overlay with upgrade prompt for non-subscribers.
+
+    # Coherence
+
+    The design achieves its mission-control aesthetic through consistent application of the dark intelligence palette, monospace typography for data, and glowing accent colors for status. The three-column layout maintains information density without overwhelming, while the collapsible Mission Control section allows users to drill from high-level alerts to detailed commodity analysis. The AI assistant integration feels native rather than bolted-on, sharing the same visual language of glowing accents and glass panels.
+- short_id: qbY1MFY3
+  seed: |
+    # Narrative
+
+    A centenary commemoration site marking 100 years since the first meeting of a national parliament. The narrative unfolds as a vertical scrollytelling journey through eight full-screen sections: a hero with historical proclamation, an interactive timeline preview, a full-bleed "Members of the First Parliament" section, rotating trivia facts, upcoming events grid, long-read article feature, library collections showcase, and educational resources. Each section is anchored by a persistent timeline navigation at bottom.
+
+    # Tech Stack
+
+    Silverstripe CMS 4.13 backend. Custom SCSS/CSS with no framework. Vanilla JavaScript with React components for timeline navigation (`react-timeline-navigation`). jQuery 3.3.1 for cookie policy. No build-tool fingerprints; likely compiled SCSS.
+
+    # Layout
+
+    Full-screen section stacking with `100vh` hero and content blocks. Asymmetric two-column layouts on desktop (50/50 splits with offset button positioning). Timeline navigation fixed at viewport bottom. Vertical decorative line element fixed at `left: calc(50vw - 710px)` on large screens. Max-width containers at 1600px. Responsive breakpoints at 768px, 1024px, 1440px, 1600px.
+
+    # Typography
+
+    Dual-font system: **GT Sectra** (serif, all weights) for headings and editorial voice; **GT Walsheim** (sans-serif, Regular/Medium/Bold/Black) for UI and body. Base font-size 10px for easy rem calculations. H1 at 3em mobile / 4em desktop (GT Sectra Regular, cream `#f6dece` on dark backgrounds). Section labels use GT Walsheim Black at 1.2em with 6px letter-spacing and uppercase transform. Italic serif (GT Sectra Medium Italic) for call-to-action links.
+
+    # Color
+
+    Heritage palette anchored by deep forest green `#286d55` (primary brand, headings, buttons). Cream `#f6dece` (hero text, accents, date badges). Warm beige `#e9e7e1` (section backgrounds). Coral-red `#e24e67` (links, accent buttons, hover states). Near-black `#222222` (text, dark sections). White `#fff` for nav text on dark backgrounds.
+
+    # Imagery
+
+    Full-bleed historical photography with gradient overlays. Hero uses large-format archival document image with gradient overlay. "Members of the First Parliament" section uses dramatic group portrait with dark overlay. Event cards use grayscale-filtered photos with cream color wash (`filter: grayscale(100%)` + semi-transparent overlay). Date badges as absolute-positioned squares (80×80px) with day/month typography.
+
+    # Components
+
+    Primary CTA buttons: rectangular, no border-radius, solid fill (green `#286d55` or red `#e24e67`), GT Walsheim Bold at 2em. On desktop, buttons break grid—positioned absolutely with negative margins overlapping section boundaries (e.g., `-80px 0 0 -80px`). Hamburger menu (three horizontal lines) triggers full-screen navigation. Timeline navigation shows 8 tick marks with selected state as taller line (30px vs 10px).
+
+    # Motion
+
+    Scroll-driven section transitions with sticky timeline navigation. Fade-in animations on load (`fade-in` class: 1.2s cubic-bezier(0.39, 0.575, 0.565, 1)). Bounce-in-left/right entrance animations for content (1.1s with multiple easing keyframes). Text-focus-in blur-to-sharp transition (2s). Tracking-in-contract letter-spacing animation for dramatic headings (2.8s). Hover scale on social icons (`transform: scale(1.1)`). See `references/motion.md` for keyframe details.
+
+    # Algorithms
+
+    Trivia section uses JavaScript array rotation (`data-trivia` attribute with JSON array) to cycle through historical facts on user interaction. Timeline navigation calculates scroll position to highlight current section tick.
+
+    # Material
+
+    Subtle gradient overlays on hero images. Semi-transparent dark overlays (`rgba(0, 0, 0, 0.6)`) on photography for text legibility. Color wash filters on event imagery (cream at 70% opacity, black at 50% for past events). No glassmorphism or heavy shadows.
+
+    # Craft
+
+    Custom webfont loading with full fallbacks (eot, woff2, woff, ttf). `-webkit-font-smoothing: antialiased` and `-moz-osx-font-smoothing: grayscale` for crisp type. IE conditional comments for legacy support. Decorative vertical line PNG repeated Y-axis as subtle structural element. Cookie banner fixed at bottom with essential-only policy.
+
+    # Coherence
+
+    The heritage palette (green/cream/red) directly references national heritage history while feeling contemporary. The GT Sectra serif adds editorial gravitas appropriate for a parliamentary archive; GT Walsheim provides modern utilitarian contrast. The scrollytelling timeline structure mirrors the chronological narrative of the centenary. Full-bleed historical photography immerses visitors in the period while the clean Swiss-influenced typography maintains readability.
+- short_id: O7jZMyNs
+  seed: |
+    # Narrative
+
+    A digital product studio homepage presenting two decades of work building human-centered digital experiences. The narrative flows from an immersive full-bleed hero with oversized manifesto typography, through case study highlights in an asymmetric editorial grid, client testimonials with large-scale statistics, to a footer with multilingual location greetings. The intent is to establish craft credibility through bold visual confidence rather than conventional corporate messaging.
+
+    # Tech Stack
+
+    Gatsby 5.15.0 static site with React components. CSS Modules for scoped styling. Custom CSS variable system for typography and spacing. Video backgrounds with custom play/pause controls. No external animation libraries detected — motion handled via CSS transitions and transforms.
+
+    # Layout
+
+    12-column CSS Grid system with fluid gutters (`--grid-gap: 10px` mobile, `20px` tablet+). Asymmetric editorial layouts: content spans variable column widths (6-col, 4-col, 3-col) creating rhythmic tension. Full-bleed hero section at `100svh`. Generous negative space between sections. Case study tiles use variable height system (`--smallTileHeight: 30vh/35vh`, `--largeTileHeight: 35vh/55vh`, `--extraLargeTileHeight: 40vh/65vh`). Responsive breakpoints at 768px, 1024px, 1250px, 1280px.
+
+    # Typography
+
+    Dual font system: **ABC Diatype** (body, headings) and **ABC Diatype Condensed** (brand/display). **DM Mono** for secondary/micro text. Hero headline uses compressed bold weight at extreme scale, flush left, tight tracking. Body text maintains comfortable reading measure (approx 60-75ch). Footer features oversized multilingual greetings ("LONDON", "HELLO", "MALMÖ", "HEJ", "OLÁ", "HEY", "LISBON", "HI", "NEW YORK", "HALLO") in condensed weight, creating typographic texture.
+
+    # Color
+
+    Vibrant gradient-led hero: coral-red (#ff4d00) transitioning to mint-green (#29ffad) with soft blue-gray accent. Neutral text at `#2b2b2b` on white backgrounds. Accent palette includes electric blue (`#2306eb`), cyan (`#5ee0f7`), yellow (`#ffe70a`), purple (`#9d48f7`). Mint-green (`#29ffad`) used for interactive elements and CTAs. Light tints for subtle backgrounds (`#f4f3fe`, `#f2f7f3`, `#fff6f2`, `#faf3ff`).
+
+    # Imagery
+
+    Hero features abstract gradient mesh artwork — soft organic forms in red-orange to mint-green transition, creating depth without photographic content. Case study thumbnails are photographic, desaturated treatment with hover color reveal. Team photo at footer showing candid group shot in outdoor setting. Client logos in monochrome row. Video backgrounds with poster frames for reduced-motion fallbacks.
+
+    # Components
+
+    **Navigation**: Minimal top bar, logo left, horizontal link row right (Services, Work, AI, Insights, Our story, Contact us). Hamburger transforms to X on mobile.
+
+    **Case Study Tiles**: Variable aspect ratio cards with category label above, headline below. Hover reveals color imagery from desaturated default.
+
+    **Testimonial Block**: Large statistic ("9.5/10") paired with quotation, source attribution with role.
+
+    **CTAs**: Text links with arrow icon, underline on hover. Pill-shaped contact button in footer.
+
+    **Video Player**: Custom controls, autoplay with pause-on-reduced-motion respect, poster frame fallback.
+
+    # Motion
+
+    Subtle motion system emphasizing content reveal. CSS transitions at `--transition: all .3s ease-out`. Link hovers: arrow icon translates 4px right. Image tiles: grayscale-to-color transition on hover (0.3s ease-out). Scroll-triggered fades for section entry. Video autoplay with intersection observer pause when off-screen. Reduced motion media query respected throughout.
+
+    # Algorithms
+
+    Standard implementation, no special design.
+
+    # Material
+
+    Standard implementation, no special design.
+
+    # Craft
+
+    CSS custom properties for systematic spacing and typography. Fluid viewport units (`svh`, `vh`) for hero height. Font loading with woff2 formats (ABCDiatype-Regular, ABCDiatype-Bold, ABCDiatype-RegularItalic, ABCDiatypeCompressed-Bold, DM Mono). Focus-visible states for accessibility. Custom video player with keyboard controls.
+
+    # Coherence
+
+    The design system achieves consistency through the ABC Diatype family across all text, the restrained accent color palette, and the asymmetric grid rhythm repeated throughout. The bold hero typography establishes immediate visual authority that carries through to the oversized footer greetings, creating bookend intensity. The mint-green accent threads from hero through CTAs to footer, unifying the experience.
+
+<system-reminder>
+The risk is not borrowing too little — it is subconsciously simplifying what you borrowed. Cutting corners is forbidden in any form: never replace a reference's technique, material, structure, or motion with a cheaper version of your own. Downgrades follow repeatable patterns (illustrative, not exhaustive): input-driven motion (scroll/pointer/time) → one-shot keyframes or static states; shape-language transformation (morph/clip/mask) → the cheapest properties (scale/translate/opacity); asymmetric layout rhythm (irregular grids, editorial composition) → uniform columns and full-width stacks; layered material (blend/texture/depth) → flat single-layer fills; bespoke vessels (framing devices, illustrated components) → default cards and pills; choreographed sequences (staged, multi-step, gated) → single triggers or fakes; typographic systems (pairing/scale/font features) → swapping the font-family; styled components → library-default skins. If your version is simpler than the reference's, that is a downgrade. Implement at the reference's fidelity.
+</system-reminder>

@@ -1,0 +1,8 @@
+{
+  "status": "fail",
+  "ruleId": "N003",
+  "archiveId": "N004",
+  "error": "Error: 1024px 指标台账横向页面溢出 1138/1024\n    at noOverflow (file:///mnt/agents/output/app/verifier/v2/verify-browser.mjs:69:44)\n    at async file:///mnt/agents/output/app/verifier/v2/verify-browser.mjs:276:5",
+  "consoleErrors": [],
+  "badResponses": []
+}

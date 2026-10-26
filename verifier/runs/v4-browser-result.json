@@ -1,0 +1,460 @@
+{
+  "status": "pass",
+  "startedAt": "2026-10-26T01:25:33.110Z",
+  "finishedAt": "2026-10-26T01:26:17.370Z",
+  "command": "VERIFY_ORIGIN=http://localhost:3100 node verifier/v4/verify-browser.mjs",
+  "baseUrl": "http://localhost:3100",
+  "checkCount": 31,
+  "checks": [
+    "独立页面测试设计稿已创建并提交，四组提交测试快照由服务端保存",
+    "登录页桌面与手机布局、六类账号入口和触控尺寸正确",
+    "admin 真实登录、角色菜单和工作台正确",
+    "管理员规则页仅提供创建新版，没有正式单价或公式直接编辑入口",
+    "管理员可办理批次但不能审批锁定",
+    "管理员待复核设计只读，定义、细则和四组提交测试完整可见",
+    "账号权限页列示六类岗位、机构范围并禁止管理员自改",
+    "建设方案准确反映当前账号权限和外部身份系统边界",
+    "管理员九个页面在 1440px 无横向溢出",
+    "管理员九个页面在 1024px 无横向溢出",
+    "管理员九个页面在 768px 无横向溢出",
+    "管理员九个页面在 375px 无横向溢出，可见按钮触控尺寸均不小于44px",
+    "admin 退出后返回登录页",
+    "employee 真实登录、角色菜单和工作台正确",
+    "普通员工只能本人试算和查看本人分润，不能保存批次或维护规则",
+    "employee 退出后返回登录页",
+    "manager 真实登录、角色菜单和工作台正确",
+    "客户经理可打开本人参与的本机构分润登记，但不能保存正式批次",
+    "manager 退出后返回登录页",
+    "branch 真实登录、角色菜单和工作台正确",
+    "机构负责人可保存本机构批次和分润，但不能审批或跨岗维护规则",
+    "branch 退出后返回登录页",
+    "leader 真实登录、角色菜单和工作台正确",
+    "分行领导保留全行批次、日志和建设方案只读视图，无业务修改按钮",
+    "leader 退出后返回登录页",
+    "reviewer 真实登录、角色菜单和工作台正确",
+    "复核人员不能修改定义，发布前必须实际通过四组服务端独立复测",
+    "复核退回已实际写入，设计稿恢复草稿且未进入正式规则库",
+    "reviewer 退出后返回登录页",
+    "六类账号全流程无控制台错误、页面异常、资源404或失败响应",
+    "独立页面测试设计稿已归档，历史记录保留且正式规则库未新增测试指标"
+  ],
+  "roleNavs": {
+    "admin": [
+      "经营概览",
+      "计价规则",
+      "计价试算",
+      "业绩归属",
+      "指标设计",
+      "规则核查",
+      "批次管理",
+      "建设方案",
+      "账号权限"
+    ],
+    "employee": [
+      "我的工作",
+      "计价规则",
+      "计价试算",
+      "业绩归属"
+    ],
+    "manager": [
+      "我的工作",
+      "计价规则",
+      "计价试算",
+      "业绩归属"
+    ],
+    "branch": [
+      "机构工作台",
+      "计价规则",
+      "计价试算",
+      "业绩归属",
+      "批次管理"
+    ],
+    "leader": [
+      "经营概览",
+      "计价规则",
+      "计价试算",
+      "业绩归属",
+      "批次与日志",
+      "建设方案"
+    ],
+    "reviewer": [
+      "经营概览",
+      "计价规则",
+      "计价试算",
+      "业绩归属",
+      "指标复核",
+      "规则核查",
+      "复核审批"
+    ]
+  },
+  "responsive": [
+    {
+      "width": 375,
+      "view": "登录页",
+      "client": 375,
+      "scroll": 375,
+      "touch": "pass"
+    },
+    {
+      "width": 1440,
+      "view": "登录页",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1440,
+      "view": "admin-工作台",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1440,
+      "view": "管理员-经营概览",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1440,
+      "view": "管理员-计价规则",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1440,
+      "view": "管理员-计价试算",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1440,
+      "view": "管理员-业绩归属",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1440,
+      "view": "管理员-指标设计",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1440,
+      "view": "管理员-规则核查",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1440,
+      "view": "管理员-批次管理",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1440,
+      "view": "管理员-建设方案",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1440,
+      "view": "管理员-账号权限",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1024,
+      "view": "管理员-经营概览",
+      "client": 1024,
+      "scroll": 1024,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1024,
+      "view": "管理员-计价规则",
+      "client": 1024,
+      "scroll": 1024,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1024,
+      "view": "管理员-计价试算",
+      "client": 1024,
+      "scroll": 1024,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1024,
+      "view": "管理员-业绩归属",
+      "client": 1024,
+      "scroll": 1024,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1024,
+      "view": "管理员-指标设计",
+      "client": 1024,
+      "scroll": 1024,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1024,
+      "view": "管理员-规则核查",
+      "client": 1024,
+      "scroll": 1024,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1024,
+      "view": "管理员-批次管理",
+      "client": 1024,
+      "scroll": 1024,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1024,
+      "view": "管理员-建设方案",
+      "client": 1024,
+      "scroll": 1024,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1024,
+      "view": "管理员-账号权限",
+      "client": 1024,
+      "scroll": 1024,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 768,
+      "view": "管理员-经营概览",
+      "client": 768,
+      "scroll": 768,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 768,
+      "view": "管理员-计价规则",
+      "client": 768,
+      "scroll": 768,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 768,
+      "view": "管理员-计价试算",
+      "client": 768,
+      "scroll": 768,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 768,
+      "view": "管理员-业绩归属",
+      "client": 768,
+      "scroll": 768,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 768,
+      "view": "管理员-指标设计",
+      "client": 768,
+      "scroll": 768,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 768,
+      "view": "管理员-规则核查",
+      "client": 768,
+      "scroll": 768,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 768,
+      "view": "管理员-批次管理",
+      "client": 768,
+      "scroll": 768,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 768,
+      "view": "管理员-建设方案",
+      "client": 768,
+      "scroll": 768,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 768,
+      "view": "管理员-账号权限",
+      "client": 768,
+      "scroll": 768,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 375,
+      "view": "管理员-经营概览",
+      "client": 375,
+      "scroll": 375,
+      "touch": "pass"
+    },
+    {
+      "width": 375,
+      "view": "管理员-计价规则",
+      "client": 375,
+      "scroll": 375,
+      "touch": "pass"
+    },
+    {
+      "width": 375,
+      "view": "管理员-计价试算",
+      "client": 375,
+      "scroll": 375,
+      "touch": "pass"
+    },
+    {
+      "width": 375,
+      "view": "管理员-业绩归属",
+      "client": 375,
+      "scroll": 375,
+      "touch": "pass"
+    },
+    {
+      "width": 375,
+      "view": "管理员-指标设计",
+      "client": 375,
+      "scroll": 375,
+      "touch": "pass"
+    },
+    {
+      "width": 375,
+      "view": "管理员-规则核查",
+      "client": 375,
+      "scroll": 375,
+      "touch": "pass"
+    },
+    {
+      "width": 375,
+      "view": "管理员-批次管理",
+      "client": 375,
+      "scroll": 375,
+      "touch": "pass"
+    },
+    {
+      "width": 375,
+      "view": "管理员-建设方案",
+      "client": 375,
+      "scroll": 375,
+      "touch": "pass"
+    },
+    {
+      "width": 375,
+      "view": "管理员-账号权限",
+      "client": 375,
+      "scroll": 375,
+      "touch": "pass"
+    },
+    {
+      "width": 1440,
+      "view": "employee-工作台",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1440,
+      "view": "manager-工作台",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1440,
+      "view": "branch-工作台",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1440,
+      "view": "leader-工作台",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1440,
+      "view": "reviewer-工作台",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    }
+  ],
+  "screenshots": [
+    "verifier/runs/v4-login-375.png",
+    "verifier/runs/v4-login-1440.png",
+    "verifier/runs/v4-admin-dashboard-1440.png",
+    "verifier/runs/v4-admin-review-readonly-1440.png",
+    "verifier/runs/v4-admin-accounts-1440.png",
+    "verifier/runs/v4-admin-blueprint-access-1440.png",
+    "verifier/runs/v4-admin-经营概览-1440.png",
+    "verifier/runs/v4-admin-经营概览-1024.png",
+    "verifier/runs/v4-admin-经营概览-768.png",
+    "verifier/runs/v4-admin-经营概览-375.png",
+    "verifier/runs/v4-admin-计价规则-375.png",
+    "verifier/runs/v4-admin-计价试算-375.png",
+    "verifier/runs/v4-admin-指标设计-375.png",
+    "verifier/runs/v4-admin-建设方案-375.png",
+    "verifier/runs/v4-admin-账号权限-375.png",
+    "verifier/runs/v4-employee-dashboard-1440.png",
+    "verifier/runs/v4-manager-dashboard-1440.png",
+    "verifier/runs/v4-branch-dashboard-1440.png",
+    "verifier/runs/v4-leader-dashboard-1440.png",
+    "verifier/runs/v4-reviewer-dashboard-1440.png",
+    "verifier/runs/v4-reviewer-before-tests-1440.png",
+    "verifier/runs/v4-reviewer-four-tests-pass-1440.png"
+  ],
+  "consoleErrors": [],
+  "badResponses": [],
+  "pagePerformance": {
+    "resourceCount": 5,
+    "transferBytes": 925416,
+    "domContentLoadedMs": 294,
+    "loadMs": 295
+  },
+  "readback": {
+    "initial": {
+      "designId": 584672,
+      "ruleId": "BMVOKRNEE",
+      "status": "review"
+    },
+    "independentTests": [
+      "正向场景3200 积分",
+      "负向场景-630 积分",
+      "零值边界0 积分",
+      "一月进度250 积分"
+    ],
+    "afterReturn": {
+      "status": "draft",
+      "testSnapshot": null
+    },
+    "final": {
+      "status": "archived",
+      "formalRuleCreated": false,
+      "designId": 584672,
+      "ruleId": "BMVOKRNEE"
+    }
+  },
+  "designArchived": true,
+  "finalDesignStatus": "archived",
+  "formalRuleCreated": false,
+  "cleanupErrors": [],
+  "error": null
+}

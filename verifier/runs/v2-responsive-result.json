@@ -1,0 +1,17 @@
+{
+  "status": "pass",
+  "businessPrecursor": "N003 已完成新建、V1/V2发布、试算批次、版本记录、归档及启停用；前序仅在1024px溢出处停止",
+  "ruleId": "N003",
+  "activeAnnualRules": 51,
+  "viewports": [
+    1440,
+    1024,
+    768,
+    375
+  ],
+  "mobileTouch": "pass",
+  "mobileNavigation": "pass",
+  "disabledExcludedFromSimulator": true,
+  "consoleErrors": [],
+  "badResponses": []
+}

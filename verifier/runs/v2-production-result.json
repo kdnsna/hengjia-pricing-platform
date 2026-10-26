@@ -1,0 +1,35 @@
+{
+  "status": "pass",
+  "rootStatus": 200,
+  "viewportMeta": "pass",
+  "coldStart": {
+    "status": "pass",
+    "pid": 12512,
+    "nodeModulesAbsent": true,
+    "entry": "dist/boot.js"
+  },
+  "productionEntries": [
+    "dist/boot.js",
+    "dist/public/index.html"
+  ],
+  "assets": [
+    {
+      "path": "/assets/index-DCt-Ff48.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/index-DgHLx-i-.css",
+      "status": 200
+    }
+  ],
+  "requestCount": 4,
+  "staticAssetCount": 2,
+  "transferBytes": 674947,
+  "encodedBodyBytes": 673747,
+  "decodedBodyBytes": 673747,
+  "domContentLoadedMs": 195,
+  "loadMs": 196,
+  "consoleErrors": [],
+  "badResponses": [],
+  "notFoundCount": 0
+}

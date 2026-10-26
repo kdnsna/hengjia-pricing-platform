@@ -1,0 +1,152 @@
+items:
+- short_id: RKWpHVna
+  seed: |
+    # Narrative
+
+    A fashion editor and stylist portfolio presenting editorial work through a scroll-driven, immersive gallery experience. The narrative flow is project-by-project: each full-viewport section displays a single fashion photograph against a dynamic gradient background that shifts colors to match each project's palette. The bottom bar anchors the experience with scroll progress (0-100%), the portfolio owner name, and an info toggle. The intent is gallery-like immersion—letting the imagery dominate while the interface recedes.
+
+    # Tech Stack
+
+    Next.js (static generation) with Sanity CMS for content. CSS-in-JS via Emotion (styled-components pattern). Custom scroll handling for progress and color transitions. Fonts served via Fast Fonts CDN.
+
+    # Layout
+
+    Full-bleed single-column with centered content. Each project occupies 100vh. The photograph is centered vertically and horizontally, sized to 40vh height with 4:6 aspect ratio on desktop. A fixed bottom bar (48px height) spans the full width, containing three zones: scroll progress left, portfolio title center, info link right. No sidebars, no gutters—content floats in the color field.
+
+    # Typography
+
+    Neue Haas Grotesk (sans-serif) at a single weight throughout. Large display size for the centered portfolio title in the bottom bar. Body text for info panel uses the same family at smaller size. The type is neutral, letting the color and imagery carry expression.
+
+    # Color
+
+    Dynamic gradient backgrounds drive the visual identity. Each project defines two CSS variables: `--bgFrom` (top) and `--bgTo` (bottom). Example: `#f9532d` (vivid orange) to `#ffc451` (golden yellow). The gradient is rendered via `html:before` pseudo-element with a mask-image fade transition. A static accent yellow `#eae800` is used for the info panel overlay. Text is white with `mix-blend-mode: difference` against the gradient.
+
+    # Imagery
+
+    High-resolution editorial fashion photography, portrait orientation (4:6), centered in viewport. Images use `mix-blend-mode: multiply` against the accent yellow background in the info state. Loading state uses a dominant-color placeholder that scales down from full cover.
+
+    # Components
+
+    **Fixed bottom bar**: Three-zone layout with scroll progress percentage, centered portfolio title, and info toggle. `mix-blend-mode: difference` ensures visibility across all background colors.
+
+    **Info panel**: Full-screen overlay sliding up from bottom, triggered by "Info" link. Contains bio text and contact details against solid accent yellow.
+
+    **Image loader**: Animated placeholder using the image's dominant color, scaling vertically from 100% to 0% with 1.25s linear transition.
+
+    # Motion
+
+    Scroll-driven color transitions: as the user scrolls between projects, the gradient background animates over 1s using `cubic-bezier(0.25, 1, 0.5, 1)` easing. Scroll progress updates in real-time (0-100%). Info panel slides up with 1s transform transition. Image reveal uses scaleY transform on a color overlay.
+
+    # Algorithms
+
+    Standard implementation, no special design.
+
+    # Material
+
+    Standard implementation, no special design.
+
+    # Craft
+
+    **Mix-blend-mode strategy**: The fixed header uses `difference` to remain legible across changing gradients. Images use `multiply` when displayed against the accent yellow info panel background, creating a printed-matter effect. **Gradient masking**: The `html:before` pseudo-element uses a linear mask to create a soft edge where the gradient meets the viewport bottom. **Custom easing**: A single easing curve `cubic-bezier(0.25, 1, 0.5, 1)` (outQuart) unifies all transitions.
+- short_id: j8QzuOup
+  seed: |
+    # Narrative
+
+    A software engineering magazine issue landing page. The narrative flows from a centered issue header (Issue header with topic label) through a grid of article cards, each pairing bold editorial illustration with typographic hierarchy. The page ends with a dark "Continue Reading" section and a footer with topic/issue navigation. The intent is editorial authority—each article feels like a chapter in a curated publication.
+
+    # Tech Stack
+
+    Static site with custom CSS architecture. FontFaceObserver for font loading. No framework detected—vanilla CSS with design tokens implemented via CSS custom properties (inferred from `--issueColor` usage).
+
+    # Layout
+
+    Asymmetric 6-column grid (`grid-template-columns: repeat(6, 1fr)`) with 6.66667% column gaps. Article cards span varying column widths—large feature articles span 4+ columns while smaller entries span 2-3. Generous vertical rhythm: section padding scales from 40px (mobile) to 100px+ (desktop). Container max-width: 1600px with 5.88235% horizontal padding.
+
+    # Typography
+
+    Dual-font system: **Baton Turbo** (sans-serif, weights 400-600) for UI/headlines, **Tiempos Text** (serif, 400+italic) for body copy, **Tiempos Head** (700) for display, **Input Mono Condensed** for code. Large display type hits 42px at desktop. Body set at 16px/1.75. Issue titles use inset box-shadow borders (`box-shadow: inset 0 0 0 1.5px currentColor`).
+
+    # Color
+
+    Light gray background (`#f2f2f2`) with near-black text (`#000`). Muted grays for secondary text: `#595959` (intro), `#767676` (captions), `#989898` (subtle). Dark sections use `#262626` (Continue Reading) and `#1e1e1e` (footer). Issue-specific accent color applied via `--issueColor` (the current issue uses a warm coral/salmon tone). Selection backgrounds use `hsla(0, 0%, 100%, 0.25)` in dark sections.
+
+    # Imagery
+
+    Editorial illustration-led. Each article features a custom full-bleed illustration with bold, flat colors and abstract/compositional style. Images use `object-fit: cover` with 56.25% aspect ratio (16:9) for standard cards, 34.75% for smaller entries. No photography—pure illustration style with vibrant palettes distinct from the UI grays.
+
+    # Components
+
+    **IssueTitle**: Signature component with boxed meta+title layout, inset 1.5px border via box-shadow, small caps meta text. **ArticleBlock**: Card with top/bottom 1.5px rules (`box-shadow: inset 0 1.5px 0 #ccc, 0 1.5px 0 #ccc`), hover reveals horizontal scale transform on a 5px accent line. **SubscribeBox**: Split layout with magazine mockup and email capture, custom 52px input height. **ContinueReading**: Inverted dark section with topic pills and issue archive grid.
+
+    # Motion
+
+    Smooth fade-in on load via `.fadeArt` class—images transition opacity. Hover transitions at 0.15s duration on links (box-shadow underlines), 0.4s on article head lines (scaleX transform from 0.25 to 1). Article cards feature a 5px horizontal line above the text that scales from 25% to 100% width on hover. No parallax, no scroll-triggered animations—restrained editorial motion.
+
+    # Algorithms
+
+    Standard implementation, no special design.
+
+    # Material
+
+    Standard implementation, no special design.
+
+    # Craft
+
+    Custom text selection colors per section (dark sections get white selection on translucent background). Scrollbar styling for code blocks: 14px width, 100px border-radius, `#ccc` thumb with `#fff` border. Font preloading for critical typefaces. CSS custom property `--issueColor` for themeable accents. Link underlines via `box-shadow: 0 1.5px #989898` with 0.15s transition—no text-decoration.
+
+    # Coherence
+
+    The design achieves editorial authority through restraint: a muted gray canvas lets the vibrant article illustrations command attention. The dual-font system (sans UI + serif reading) creates clear information hierarchy. The consistent 1.5px hairline rules and box-shadow underlines unify components without visual noise. Every interactive element has purposeful, measured motion.
+- short_id: rZgvv3pc
+  seed: |
+    # Narrative
+
+    A type design educational product landing page for a font design guide/book. The narrative flows from a bold typographic hero establishing expertise ("LEARN HOW TO DESIGN FONTS LIKE A PRO"), through an audience-targeting card ("For BEGINNERS & EXPERTS"), into feature explanations, a horizontal-scrolling gallery of book spreads, detailed curriculum sections, and a purchase CTA. The story positions the guide as the definitive resource for mastering type design from sketching to production.
+
+    # Tech Stack
+
+    Built with Framer (site generator meta tag). CSS custom properties for theming with light/dark mode support. Self-hosted custom fonts (Rules, Nuances Condensed) alongside Inter and Inter Display from the platform's CDN.
+
+    # Layout
+
+    Asymmetric editorial layout with generous negative space. Hero uses stacked centered typography. The "For BEGINNERS & EXPERTS" card breaks the vertical flow with a tilted/angled presentation. Two-column splits for feature explanations (image left, text right or vice versa). Horizontal scrolling gallery section for book preview spreads. Full-width sections alternate with contained content. Header uses backdrop-filter blur with semi-transparent background.
+
+    # Typography
+
+    Dual custom font system: **Rules** (Regular and Bold weights) for display headlines, **Nuances Condensed** (Black and Regular Italic) for accent text. **Inter** and **Inter Display** for body copy and UI. Extreme scale contrast: oversized display type in hero (Rules Bold), tight line-height on headlines. Italic used expressively ("For" in Nuances Condensed Regular Italic). All-caps treatment for emphasis.
+
+    # Color
+
+    High-contrast black-and-white base with **red (#FF0000)** as the single accent. Light mode: white background (#fff), black text (#000). Dark mode: black background, white text. Red appears in the "BEGINNERS & EXPERTS" card background, selection color (::selection background: #FF0000), and brand SVG fills. Semi-transparent overlays: rgba(255,255,255,0.92) for header glassmorphism.
+
+    # Imagery
+
+    Product photography of the physical book with red cover. Screenshots of book interior spreads showing type specimens, glyph construction diagrams, and educational content. Horizontal scroll gallery displays multiple book pages. Custom SVG logo (stylized "b" glyph) in red. All imagery supports the typography-education narrative.
+
+    # Components
+
+    Primary CTA buttons: black background, white text, rounded corners, "GET THE BOOK" / "GET IT NOW" labels. Outline buttons for secondary actions (white border on dark). Header navigation with blur backdrop, minimal links. Footer with structured link columns. Cards with tilted/rotated presentation for visual interest.
+
+    # Motion
+
+    Scroll-triggered parallax with perspective(1200px) transforms on headlines. Elements translate on Y-axis as they enter viewport (will-change: transform). Horizontal scroll section for gallery navigation. Smooth transitions on hover states. Header has subtle scale/translate transforms on scroll.
+
+    # Algorithms
+
+    Standard implementation, no special design.
+
+    # Material
+
+    Glassmorphism header with backdrop-filter: blur(8px) and semi-transparent background. Subtle border treatment on header (rgba border-bottom). No heavy shadows or textures - clean flat surfaces with blur as the primary material effect.
+
+    # Craft
+
+    Custom text selection color matching brand red (#FF0000 background, #FFFFFF text). Careful font loading with unicode-range subsets for Inter. Placeholder font metrics for reduced layout shift. Framer badge hidden. Responsive breakpoints at 1440px, 1200px, 810px, and mobile.
+
+    # Coherence
+
+    The aggressive red accent against monochrome base creates immediate visual identity. Custom display fonts (Rules, Nuances) signal typographic expertise appropriate for a type design guide. The horizontal-scrolling gallery mimics the experience of flipping through a book. Every element reinforces the "professional type education" positioning.
+
+<system-reminder>
+The risk is not borrowing too little — it is subconsciously simplifying what you borrowed. Cutting corners is forbidden in any form: never replace a reference's technique, material, structure, or motion with a cheaper version of your own. Downgrades follow repeatable patterns (illustrative, not exhaustive): input-driven motion (scroll/pointer/time) → one-shot keyframes or static states; shape-language transformation (morph/clip/mask) → the cheapest properties (scale/translate/opacity); asymmetric layout rhythm (irregular grids, editorial composition) → uniform columns and full-width stacks; layered material (blend/texture/depth) → flat single-layer fills; bespoke vessels (framing devices, illustrated components) → default cards and pills; choreographed sequences (staged, multi-step, gated) → single triggers or fakes; typographic systems (pairing/scale/font features) → swapping the font-family; styled components → library-default skins. If your version is simpler than the reference's, that is a downgrade. Implement at the reference's fidelity.
+</system-reminder>

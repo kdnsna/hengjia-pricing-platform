@@ -1,0 +1,15 @@
+{
+  "startedAt": "2026-10-26T01:26:25.654Z",
+  "baseUrl": "http://localhost:3100",
+  "isolatedDirectory": "/tmp/hengjia-v4-production.TKEGAx",
+  "checks": {
+    "coldStart": "pass",
+    "access": "pass",
+    "browser": "pass",
+    "data": "pass",
+    "constraints": "pass"
+  },
+  "serverStoppedAfterTests": true,
+  "pid": 27118,
+  "status": "pass"
+}

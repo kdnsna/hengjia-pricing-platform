@@ -1,0 +1,18 @@
+{
+  "status": "pass",
+  "rules": 51,
+  "desktop": "1440px",
+  "mobile": "375px",
+  "consoleErrors": [],
+  "badResponses": [],
+  "flows": [
+    "规则搜索与编辑",
+    "正增/负增试算",
+    "保存批次",
+    "新增分润",
+    "异常筛选",
+    "提交复核",
+    "审批锁定",
+    "移动导航"
+  ]
+}

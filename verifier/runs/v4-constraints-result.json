@@ -1,0 +1,37 @@
+{
+  "status": "pass",
+  "startedAt": "2026-10-26T01:26:20.389Z",
+  "finishedAt": "2026-10-26T01:26:25.242Z",
+  "checks": [
+    "pricing_rules.id 主键拒绝重复",
+    "app_users.id 主键拒绝重复",
+    "auth_sessions.id 主键拒绝重复",
+    "indicator_designs.id 主键拒绝重复",
+    "allocations.id 主键拒绝重复",
+    "calculation_batches.id 主键拒绝重复",
+    "audit_logs.id 主键拒绝重复",
+    "app_users.username 唯一约束拒绝重复",
+    "app_users.employee_id 唯一约束拒绝重复",
+    "auth_sessions.token_hash 唯一约束拒绝重复"
+  ],
+  "checkCount": 10,
+  "rowCountsBefore": {
+    "users": 18,
+    "sessions": 20,
+    "rules": 56,
+    "designs": 18,
+    "allocations": 9,
+    "batches": 13,
+    "logs": 238
+  },
+  "rowCountsAfter": {
+    "users": 18,
+    "sessions": 20,
+    "rules": 56,
+    "designs": 18,
+    "allocations": 9,
+    "batches": 13,
+    "logs": 238
+  },
+  "transactionsRolledBack": true
+}

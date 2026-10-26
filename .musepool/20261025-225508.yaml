@@ -1,0 +1,206 @@
+items:
+- short_id: be8mmXs1
+  seed: |
+    # Narrative
+
+    A furniture and spatial design studio portfolio presenting 30+ projects through a spreadsheet-inspired data table interface. The narrative flow is non-linear: visitors scan a dense index of projects (numbered, dated, named) and hover to reveal project imagery. The site treats the portfolio as a database—each row is a project entry with sortable/filterable metadata (year, collection, typology, client, location, dimensions, materials). Two auxiliary views (Overview, About) accessible via header links. The overall intent is archival precision mixed with tactile browsing.
+
+    # Tech Stack
+
+    Nuxt 3 (Vue-based SSG/SPA) with Tailwind CSS v4.1.10. Custom CSS properties for spacing system (`--spacing: .1rem`, `--spacing-gutter`, `--spacing-roof`). No external animation library—interactions implemented via native Vue transitions and CSS keyframes.
+
+    # Layout
+
+    Fixed header with 24-column CSS Grid (`grid-template-columns: repeat(24, minmax(0, 1fr))`). Data table body scrolls independently while header remains pinned. Each project row spans full width with columns allocated: number (2), name (3), collection (variable), typology (2), client (3), location (2), dimensions (3), materials (3). Mobile collapses to single column with truncated text. Negative space is minimal—information density is the organizing principle. See `references/layout.md` for grid implementation.
+
+    # Typography
+
+    Primary font: Foundry Gridnik (custom woff2, medium weight). Monospace-inspired sans with squared terminals and uniform stroke width. CSS custom property: `--font-primary: "foundrygridnik", sans-serif`. Base size scales with viewport; line-height set to `1.2` (`--leading-normal`). Text treatment includes "capitalized" labels—hover reveals full word from single-letter fragments (each letter wrapped in span, opacity transition). Table headers at 20% opacity; hovered rows at 100%.
+
+    # Color
+
+    Strict monochrome: `#000` text on `#fff` background. No accent colors. Opacity used for hierarchy: 5% (disabled), 15% (not-hovered), 20% (header/secondary), 100% (active). `mix-blend-mode: difference` applied to fixed home-screen layer, inverting text color over project imagery. Theme-color meta set to `#fff`.
+
+    # Imagery
+
+    Project photography appears in fixed-position overlay on hover—full-bleed within viewport, aspect-ratio 518/744 (portrait orientation). Images sourced from Sanity CMS. Photography style: documentary, neutral backgrounds, material-focused (aluminum, wood, steel, stone). No illustration or 3D render—only photographic documentation of physical objects and installations.
+
+    # Components
+
+    **Data table row**: Grid-based with 8 columns. Hover state triggers opacity cascade—non-hovered rows dim to 15%.
+
+    **Marquee text**: On hover, truncated cell text expands into scrolling marquee (CSS animation `marquee-0f5c8266`, linear, infinite). Fade masks on left/right edges via gradient overlay (`linear-gradient(90deg,#000,#0000 10%,#0000 90%,#000)`).
+
+    **Capitalize component**: First letter always visible; remaining letters fade in on hover (transition-delay 0.3s).
+
+    **Filter button**: 20% opacity default, 7% on hover, 100% when filters active.
+
+    **Custom cursor**: Absolute-positioned element following mouse, translates based on `--right-bound` variable. See `references/motion.md`.
+
+    # Motion
+
+    Staggered entrance: Each table row fades in with delay calculated as `index * 106ms` (30 projects × stagger = ~3.2s total sequence). CSS transition on opacity with `cubic-bezier(.4,0,.2,1)` easing. Page transitions: 0.4s opacity fade. Marquee animation duration calculated per text width. Hover states: 0.15s–0.3s transitions. See `references/motion.md` for implementation details.
+
+    # Algorithms
+
+    Standard implementation, no special design.
+
+    # Material
+
+    Standard implementation, no special design.
+
+    # Craft
+
+    Scroll indicator: SVG arrow appears at table bottom when scrollable, rotates 180° when reaching end. Safe area insets respected (`--vueuse-safe-area-top` etc.). Touch-action optimized for mobile scrolling. All interactive elements have `pointer-events` toggled during transitions to prevent double-clicks.
+  references:
+    layout: |
+      # Layout Reference
+
+      ## Grid System
+
+      24-column grid with variable gaps:
+      - Mobile: `gap: calc(var(--spacing, .1rem) * 6)` (0.6rem)
+      - Desktop (≥48rem): `gap: calc(var(--spacing, .1rem) * 12)` (1.2rem)
+
+      ```css
+      .ui-data-table-row {
+        display: grid;
+        gap: calc(var(--spacing, .1rem) * 6);
+        grid-template-columns: repeat(24, minmax(0, 1fr));
+        width: 100%;
+      }
+
+      @media (min-width: 48rem) {
+        .ui-data-table-row {
+          gap: calc(var(--spacing, .1rem) * 12);
+        }
+      }
+      ```
+
+      ## Column Allocation
+
+      | Column | Span | Content |
+      |--------|------|---------|
+      | 1 | 2 | Number (index) |
+      | 2 | 3 | Project name (marquee) |
+      | 3 | variable | Collection |
+      | 4 | 2 | Typology |
+      | 5 | 3 | Client |
+      | 6 | 2 | Location |
+      | 7 | 3 | Dimensions (L×W×H) |
+      | 8 | 3 | Materials |
+
+      ## Spacing System
+
+      Base unit: `--spacing: .1rem` (1px at root 10px)
+
+      - `--spacing-gutter`: Horizontal page padding
+      - `--spacing-roof`: Vertical header padding
+      - `--spacing-full`: 100%
+      - `--spacing-lh`: 1lh (line-height relative)
+      - `--spacing-em`: 1em
+
+      ## Fixed Home Screen
+
+      ```css
+      .home-screen {
+        position: fixed;
+        inset: 0;
+        bottom: auto;
+        max-height: calc(100svh - 22rem);
+        padding-block: var(--spacing-roof);
+        padding-inline: var(--spacing-gutter);
+        pointer-events: none;
+        z-index: var(--z-index-home, 100);
+        mix-blend-mode: difference;
+        color: #fff;
+      }
+
+      @media (min-width: 48rem) {
+        .home-screen {
+          max-height: none;
+        }
+      }
+      ```
+
+      ## Z-Index Layers
+
+      - `--z-index-home`: 100 (table interface)
+      - `--z-index-about`: 150 (about page overlay)
+
+      ## Responsive Behavior
+
+      Mobile (<48rem):
+      - Most columns hidden (`hidden md:block`)
+      - Only number, name, and truncated info visible
+      - Table body scrolls with momentum
+
+      Desktop (≥48rem):
+      - Full 8-column layout
+      - Header remains fixed while body scrolls
+      - Hover interactions enabled
+- short_id: UaTyOP4I
+  seed: |
+    # Narrative
+
+    A design studio portfolio presenting work as a systematic catalog. The site opens with a full-screen data table where projects are listed chronologically in rows with four column headers: Date, Object, Subject, Control. The "Object" column categorizes work by medium (Exhibition, Publication, Visual Identity, Poster, etc.), while "Subject" names the client or project. This tabular format treats the portfolio as an archival index rather than a visual showcase—no thumbnails, only typographic entries. The Control column provides a toggle interface for sorting and filtering.
+
+    # Tech Stack
+
+    WordPress with WooCommerce (shop functionality present), custom theme. jQuery-based interactions for sorting and AJAX navigation. FastClick for touch optimization. Magnific Popup for lightbox galleries on project pages.
+
+    # Layout
+
+    Strict 7-column grid system with visible vertical borders between columns. The grid lines are rendered as 1px borders on `.col` elements, creating a ruled paper aesthetic. Full-bleed layout with no max-width constraint—content extends to viewport edges. Header contains a slide-out navigation menu triggered by "-" toggle. Sticky table headers remain fixed during scroll. Each project row is a full-width clickable link.
+
+    Column structure: Date (2/7), Object (2/7), Subject (2/7), Control (1/7). Mobile collapses to single column showing Date only.
+
+    # Typography
+
+    Primary typeface: **TP Vorzeit Grotesk Demi** — a custom grotesque sans-serif with distinctive character. Loaded via `@font-face` from WOFF2/WOFF/TTF/EOT formats. Font-weight 600, tight line-height (1), optimized legibility with `-webkit-font-smoothing: antialiased` and `-moz-osx-font-smoothing: grayscale`.
+
+    Base size: 13px with viewport-relative scaling (`3.4vw` for large headings). All-caps treatment on column headers. Text links use underline via repeating background image technique (PNG base64 data URI) positioned at `left 7vw` (desktop: `left 3.5vw`).
+
+    # Color
+
+    Strict monochrome: `#000` (black) text on `#fff` (white) background. No accent colors, no gradients. Links inherit black with underline decoration. Hover states invert to white text on black background (`background:#000; color:#fff`). Grid borders are black. This binary palette reinforces the archival, systematic character.
+
+    # Imagery
+
+    No imagery on the index page—purely typographic. Project detail pages (not visible in this view) contain photography and visual work presented in a lightbox gallery. The portfolio's index deliberately suppresses visuals in favor of the catalog metaphor.
+
+    # Components
+
+    **Navigation**: Slide-out menu with "-" toggle icon. Menu organized in three columns: Output (work categories), Soft (articles/lectures/philosophy), Hard (contact/info). Hidden on mobile behind hamburger.
+
+    **Table Headers**: Clickable sort triggers with `data-sort` attributes (date, cat, name). Sticky positioning on scroll.
+
+    **Links**: Custom underline implementation using background-image with 1px PNG pattern, positioned below baseline.
+
+    **Control Toggle**: "Out of control" / "Control" text toggle in header and table head—switches view modes.
+
+    # Motion
+
+    Subtle fade-in on page load (`fadeIn` animation, 0.2s duration). Menu toggle slides navigation panel. Sorting reorders rows with DOM manipulation (no animated transitions). Lightbox opens with `mfp-fade` class for fade transition. Cursor-following "+" sign appears on gallery image hover.
+
+    # Algorithms
+
+    Standard implementation, no special design.
+
+    # Material
+
+    Standard implementation, no special design.
+
+    # Craft
+
+    **Grid lines**: Visible 1px black borders between all seven columns, created via `.bordered` class on column divs. Creates the ruled paper / spreadsheet aesthetic.
+
+    **Font synthesis disabled**: `font-synthesis: none` prevents browser from artificially bolding/italicizing the custom typeface.
+
+    **Text rendering**: `text-rendering: optimizeLegibility` and OpenType ligatures enabled via `-moz-font-feature-settings: 'liga'`.
+
+    **Touch optimization**: FastClick library attached to document body for instant tap response on mobile.
+
+<system-reminder>
+The risk is not borrowing too little — it is subconsciously simplifying what you borrowed. Cutting corners is forbidden in any form: never replace a reference's technique, material, structure, or motion with a cheaper version of your own. Downgrades follow repeatable patterns (illustrative, not exhaustive): input-driven motion (scroll/pointer/time) → one-shot keyframes or static states; shape-language transformation (morph/clip/mask) → the cheapest properties (scale/translate/opacity); asymmetric layout rhythm (irregular grids, editorial composition) → uniform columns and full-width stacks; layered material (blend/texture/depth) → flat single-layer fills; bespoke vessels (framing devices, illustrated components) → default cards and pills; choreographed sequences (staged, multi-step, gated) → single triggers or fakes; typographic systems (pairing/scale/font features) → swapping the font-family; styled components → library-default skins. If your version is simpler than the reference's, that is a downgrade. Implement at the reference's fidelity.
+</system-reminder>

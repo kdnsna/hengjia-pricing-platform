@@ -1,0 +1,222 @@
+{
+  "status": "pass",
+  "navigation": [
+    "计价规则",
+    "指标设计",
+    "计价试算",
+    "业绩归属",
+    "异常校验",
+    "审核与版本",
+    "平台蓝图",
+    "经营总览"
+  ],
+  "capabilityCounts": {
+    "all": 14,
+    "current": 3,
+    "partial": 5,
+    "planned": 6,
+    "domainOrganization": 3,
+    "searchAppeal": 1,
+    "emptyReset": 14
+  },
+  "drawer": {
+    "escapeClose": true,
+    "plannedHasNoFakeModuleLink": true,
+    "existingModuleJump": "C07 → 计价试算",
+    "mobileRect": {
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "bottom": 812,
+      "viewportWidth": 375,
+      "viewportHeight": 812
+    }
+  },
+  "csv": {
+    "filename": "download",
+    "rowsIncludingHeader": 15,
+    "bom": true
+  },
+  "architecture": {
+    "layers": 6,
+    "ledgers": 4,
+    "entities": 17,
+    "controls": 8
+  },
+  "governance": {
+    "stepsChecked": 12,
+    "branches": 4,
+    "designDecisions": 6
+  },
+  "roadmap": {
+    "phases": [
+      "P0",
+      "P1",
+      "P2"
+    ],
+    "externalBoundaries": 5
+  },
+  "sources": {
+    "all": 18,
+    "requirements": 14,
+    "practices": 4,
+    "uniqueOfficialLinks": 18
+  },
+  "responsive": [
+    {
+      "width": 1440,
+      "view": "能力地图",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1440,
+      "view": "目标架构",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1440,
+      "view": "治理流程",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1440,
+      "view": "建设路线",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1440,
+      "view": "研究依据",
+      "client": 1440,
+      "scroll": 1440,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1024,
+      "view": "能力地图",
+      "client": 1024,
+      "scroll": 1024,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1024,
+      "view": "目标架构",
+      "client": 1024,
+      "scroll": 1024,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1024,
+      "view": "治理流程",
+      "client": 1024,
+      "scroll": 1024,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1024,
+      "view": "建设路线",
+      "client": 1024,
+      "scroll": 1024,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 1024,
+      "view": "研究依据",
+      "client": 1024,
+      "scroll": 1024,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 768,
+      "view": "能力地图",
+      "client": 768,
+      "scroll": 768,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 768,
+      "view": "目标架构",
+      "client": 768,
+      "scroll": 768,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 768,
+      "view": "治理流程",
+      "client": 768,
+      "scroll": 768,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 768,
+      "view": "建设路线",
+      "client": 768,
+      "scroll": 768,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 768,
+      "view": "研究依据",
+      "client": 768,
+      "scroll": 768,
+      "touch": "not_applicable"
+    },
+    {
+      "width": 375,
+      "view": "能力地图",
+      "client": 375,
+      "scroll": 375,
+      "touch": "pass"
+    },
+    {
+      "width": 375,
+      "view": "目标架构",
+      "client": 375,
+      "scroll": 375,
+      "touch": "pass"
+    },
+    {
+      "width": 375,
+      "view": "治理流程",
+      "client": 375,
+      "scroll": 375,
+      "touch": "pass"
+    },
+    {
+      "width": 375,
+      "view": "建设路线",
+      "client": 375,
+      "scroll": 375,
+      "touch": "pass"
+    },
+    {
+      "width": 375,
+      "view": "研究依据",
+      "client": 375,
+      "scroll": 375,
+      "touch": "pass"
+    }
+  ],
+  "consoleErrors": [],
+  "badResponses": [],
+  "screenshots": [
+    "verifier/runs/v3-capabilities-desktop.png",
+    "verifier/runs/v3-architecture-desktop.png",
+    "verifier/runs/v3-flow-desktop.png",
+    "verifier/runs/v3-roadmap-desktop.png",
+    "verifier/runs/v3-sources-desktop.png",
+    "verifier/runs/v3-capabilities-mobile.png",
+    "verifier/runs/v3-architecture-mobile.png",
+    "verifier/runs/v3-flow-mobile.png",
+    "verifier/runs/v3-roadmap-mobile.png",
+    "verifier/runs/v3-sources-mobile.png",
+    "verifier/runs/v3-capability-drawer-mobile.png"
+  ]
+}

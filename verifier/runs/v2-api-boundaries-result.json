@@ -1,0 +1,20 @@
+{
+  "status": "pass",
+  "mode": "testDesign only; no saved designs or batches",
+  "blocked": [
+    "元转万元除数非10000"
+  ],
+  "noNegativeScores": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "negativeRoundingScores": [
+    -1.01,
+    -1.01,
+    -1.01,
+    -1.01
+  ],
+  "workspaceUnchanged": true
+}

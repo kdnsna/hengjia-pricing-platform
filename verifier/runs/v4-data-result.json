@@ -1,0 +1,25 @@
+{
+  "status": "pass",
+  "startedAt": "2026-10-26T01:26:18.672Z",
+  "finishedAt": "2026-10-26T01:26:19.325Z",
+  "originalRulesVerified": 51,
+  "demoAccountsVerified": 6,
+  "rowCounts": {
+    "rules": 56,
+    "designs": 18,
+    "allocations": 9,
+    "batches": 13,
+    "users": 18,
+    "sessions": 20,
+    "logs": 238
+  },
+  "duplicateChecks": "pass",
+  "testArtifactsRetained": true,
+  "introspection": {
+    "tables": 7,
+    "columns": 84,
+    "indexes": 9,
+    "note": "introspection未正确标识既有主键和唯一性；10组事务重复值测试已由数据库实际拒绝并全部回滚"
+  },
+  "constraintChecks": 10
+}

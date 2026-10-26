@@ -1,0 +1,18 @@
+{
+  "startedAt": "2026-10-26T01:25:00.270Z",
+  "command": "NODE_ENV=production PORT=3100 node /tmp/hengjia-v4-production.TKEGAx/dist/boot.js",
+  "baseUrl": "http://localhost:3100",
+  "isolatedDirectory": "/tmp/hengjia-v4-production.TKEGAx",
+  "processCwd": "/tmp/hengjia-v4-production.TKEGAx",
+  "nodeModulesPresent": false,
+  "entryPresent": true,
+  "publicEntryPresent": true,
+  "processAlive": true,
+  "portOwnedByColdProcess": true,
+  "ready": true,
+  "pageStatus": 200,
+  "unauthenticatedWorkspaceStatus": 401,
+  "pid": 27118,
+  "correction": "首次3000端口启动发生EADDRINUSE，该次结果不作为隔离冷启动证据；本次独立端口核验进程、工作目录和端口归属。",
+  "status": "pass"
+}

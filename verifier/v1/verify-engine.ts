@@ -1,0 +1,24 @@
+import assert from "node:assert/strict";
+import { calculate, PRICING_RULES } from "../../contracts/pricing";
+
+assert.equal(PRICING_RULES.length, 51, "年度指标必须完整为51项");
+assert.equal(PRICING_RULES.filter(r => r.category === "利润").length, 20);
+assert.equal(PRICING_RULES.filter(r => r.category === "规模").length, 11);
+assert.equal(PRICING_RULES.filter(r => r.category === "客户").length, 20);
+const deposit = PRICING_RULES.find(r => r.id === "S005")!;
+const positive = calculate(deposit, { month: 10, directValue: 0, opening: 8600, current: 9320, previous: 9150 });
+assert.equal(positive.score, 802.92, "存量+时间加权正增合并计算");
+const negative = calculate(deposit, { month: 10, directValue: 0, opening: 8600, current: 8300, previous: 8420 });
+assert.equal(negative.score, -197.43, "负增长使用60%扣减单价");
+const direct = PRICING_RULES.find(r => r.id === "C013")!;
+assert.equal(calculate(direct, { month: 10, directValue: 2, opening: 0, current: 0, previous: 0 }).score, 4000, "私行客户当月净增直接计价");
+assert.equal(calculate(direct, { month: 10, directValue: -2, opening: 0, current: 0, previous: 0 }).score, -4000, "客户负增对称扣减");
+const aum = PRICING_RULES.find(r => r.id === "S006")!;
+assert.equal(calculate(aum, { month: 10, directValue: 0, opening: 100, current: 220, previous: 190 }).score, 20, "AUM季度折算");
+const physical = PRICING_RULES.find(r => r.id === "P014")!;
+assert.equal(physical.stockRate, 500, "实物金不得与线上金抄串");
+const online = PRICING_RULES.find(r => r.id === "P013")!;
+assert.equal(online.stockRate, 300);
+const pension = PRICING_RULES.find(r => r.id === "C008")!;
+assert.equal(pension.positiveRate, 3, "养老金按年度表3元/户而非旧公式39.99");
+console.log(JSON.stringify({ status: "pass", rules: 51, positive: positive.score, negative: negative.score, privateCustomers: 4000, aum: 20, physicalGold: 500, pension: 3 }));
